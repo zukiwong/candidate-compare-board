@@ -92,3 +92,4 @@ Uses shadcn/ui component library, all UI components located in `src/components/u
 
 ## Testing and Build
 No test framework configured. Build uses `npm run build` command, outputs ES module format.
+- 除了我们的对话用中文的，其他代码和注释和commit都用英文的

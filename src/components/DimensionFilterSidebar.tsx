@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Switch } from "./ui/switch";
@@ -29,12 +29,52 @@ export function DimensionFilterSidebar({
   const [showActiveDimensions, setShowActiveDimensions] = useState(true);
   const [showAvailableDimensions, setShowAvailableDimensions] = useState(true);
   const [newDimension, setNewDimension] = useState("");
+  const [draggedItem, setDraggedItem] = useState<string | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
   const handleAddCustomDimension = () => {
     if (newDimension.trim()) {
       onAddDimension(newDimension.trim());
       setNewDimension("");
     }
+  };
+
+  const handleDragStart = (e: React.DragEvent, dimension: string) => {
+    setDraggedItem(dimension);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverIndex(index);
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
+  };
+
+  const handleDrop = (e: React.DragEvent, dropIndex: number) => {
+    e.preventDefault();
+
+    if (!draggedItem) return;
+
+    const dragIndex = activeDimensions.indexOf(draggedItem);
+    if (dragIndex === -1) return;
+
+    // Create new array with reordered items
+    const newDimensions = [...activeDimensions];
+    const [removed] = newDimensions.splice(dragIndex, 1);
+    newDimensions.splice(dropIndex, 0, removed);
+
+    onReorderDimensions(newDimensions);
+    setDraggedItem(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedItem(null);
+    setDragOverIndex(null);
   };
 
   const inactiveDimensions = availableDimensions.filter(
@@ -72,9 +112,21 @@ export function DimensionFilterSidebar({
               {activeDimensions.map((dimension, index) => (
                 <div
                   key={dimension}
-                  className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, dimension)}
+                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragLeave={handleDragLeave}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onDragEnd={handleDragEnd}
+                  className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
+                    draggedItem === dimension
+                      ? "opacity-50 bg-blue-50 border border-blue-200"
+                      : dragOverIndex === index
+                      ? "bg-blue-50 border border-blue-200 border-dashed"
+                      : "bg-gray-50"
+                  }`}
                 >
-                  <GripVertical className="w-4 h-4 text-gray-400 cursor-grab" />
+                  <GripVertical className="w-4 h-4 text-gray-400 cursor-grab hover:text-gray-600" />
                   <div className="flex-1">
                     <span className="text-sm text-gray-900">{dimension}</span>
                   </div>
