@@ -113,10 +113,10 @@ export function DimensionFilterSidebar({
                 <div
                   key={dimension}
                   draggable
-                  onDragStart={(e) => handleDragStart(e, dimension)}
-                  onDragOver={(e) => handleDragOver(e, index)}
+                  onDragStart={(e: React.DragEvent) => handleDragStart(e, dimension)}
+                  onDragOver={(e: React.DragEvent) => handleDragOver(e, index)}
                   onDragLeave={handleDragLeave}
-                  onDrop={(e) => handleDrop(e, index)}
+                  onDrop={(e: React.DragEvent) => handleDrop(e, index)}
                   onDragEnd={handleDragEnd}
                   className={`flex items-center gap-3 p-2 rounded-lg transition-all ${
                     draggedItem === dimension
@@ -132,7 +132,7 @@ export function DimensionFilterSidebar({
                   </div>
                   <Switch
                     checked={true}
-                    onCheckedChange={(checked) => onToggleDimension(dimension, checked)}
+                    onCheckedChange={(checked: boolean) => onToggleDimension(dimension, checked)}
                     size="sm"
                   />
                 </div>
@@ -173,7 +173,7 @@ export function DimensionFilterSidebar({
                   </div>
                   <Switch
                     checked={false}
-                    onCheckedChange={(checked) => onToggleDimension(dimension, checked)}
+                    onCheckedChange={(checked: boolean) => onToggleDimension(dimension, checked)}
                     size="sm"
                   />
                 </div>
@@ -194,8 +194,8 @@ export function DimensionFilterSidebar({
               <Input
                 placeholder="Enter dimension name..."
                 value={newDimension}
-                onChange={(e) => setNewDimension(e.target.value)}
-                onKeyDown={(e) => {
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewDimension(e.target.value)}
+                onKeyDown={(e: React.KeyboardEvent) => {
                   if (e.key === 'Enter') {
                     handleAddCustomDimension();
                   }
