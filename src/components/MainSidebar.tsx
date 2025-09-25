@@ -9,6 +9,7 @@ import {
   LogOut
 } from "lucide-react";
 import logo from "figma:asset/e2d8b480c5a427d4be92cf3c3dde8a8779106e90.png";
+import avatar from "../assets/avatar.png";
 
 export function MainSidebar() {
   const [activeTab, setActiveTab] = useState("candidates");
@@ -49,9 +50,11 @@ export function MainSidebar() {
       {/* User Profile & Logout */}
       <div className="p-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center">
-            <span className="text-white text-sm font-medium">Z</span>
-          </div>
+          <img
+            src={avatar}
+            alt="User Avatar"
+            className="w-8 h-8 rounded-full object-cover"
+          />
           <span className="text-sm font-medium text-gray-900">ONE New Zealand</span>
         </div>
         <Button
