@@ -90,6 +90,43 @@ Uses shadcn/ui component library, all UI components located in `src/components/u
 - Icons consistently use lucide-react
 - Responsive design using Tailwind responsive class names
 
+## Backend Development
+
+The project now includes a complete Node.js/Express backend with AI-powered matching:
+
+### Backend Structure
+```
+backend/
+├── server.js              # Express main server (Port 3002)
+├── routes/                 # API route handlers
+├── services/               # Business logic and AI integration
+├── data/                   # Data storage and sample data
+└── README.md              # Backend documentation
+```
+
+### Key Features
+- **AI JD Parsing**: Gemini 2.5 API for intelligent job description analysis
+- **Candidate Matching**: Multi-dimensional scoring algorithm
+- **Interview Questions**: AI-generated targeted questions
+- **Sample Data**: 10 diverse candidate profiles for demo
+
+### Quick Start Backend
+```bash
+cd backend
+cp .env.example .env
+# Configure GEMINI_API_KEY in .env
+npm install
+npm start  # Runs on http://localhost:3002
+```
+
+### API Endpoints
+- POST `/api/jd/parse` - Parse JD text with AI
+- POST `/api/candidates/import` - Import sample candidates
+- POST `/api/match/{candidateId}` - Get AI-powered match analysis
+- GET `/api/health` - System health check
+
+See `backend/README.md` for complete API documentation.
+
 ## Testing and Build
 No test framework configured. Build uses `npm run build` command, outputs ES module format.
 - 除了我们的对话用中文的，其他代码和注释和commit都用英文的

@@ -9,54 +9,7 @@ import { FollowUpPrompts } from "./FollowUpPrompts";
 import { ProjectModal } from "./ProjectModal";
 import { WorkExperienceModal } from "./WorkExperienceModal";
 import { Github, ExternalLink, Linkedin, FileText, MapPin, Check, X } from "lucide-react";
-
-interface Candidate {
-  id: string;
-  name: string;
-  avatar?: string;
-  coreSkillMatch: number;
-  topSkills: Array<{ name: string; rating: number }>;
-  projects: Array<{
-    title: string;
-    description: string;
-    technologies: string[];
-    duration: string;
-    githubUrl?: string;
-    liveUrl?: string;
-  }>;
-  education: {
-    school: string;
-    schoolLogo?: string;
-    degree: string;
-  };
-  workExperience: {
-    years: number;
-    months: number;
-    positions: Array<{
-      company: string;
-      position: string;
-      duration: string;
-      description: string;
-      technologies: string[];
-      achievements: string[];
-    }>;
-  };
-  location: {
-    current: string;
-    matches: boolean;
-    isRemote: boolean;
-    isHybrid: boolean;
-  };
-  links: {
-    github?: string;
-    portfolio?: string;
-    linkedin?: string;
-    cv?: string;
-    transcript?: string;
-  };
-  softSkills: Array<{ name: string; rating: number }>;
-  followUpPrompts: string[];
-}
+import { Candidate } from "../types/candidate";
 
 interface CandidateCardProps {
   candidate: Candidate;
@@ -120,7 +73,7 @@ export function CandidateCard({
           <Avatar className="w-12 h-12">
             <AvatarImage src={candidate.avatar} />
             <AvatarFallback className="bg-accent text-accent-foreground font-semibold">
-              {candidate.name.split(' ').map(n => n[0]).join('')}
+              {candidate.initials || candidate.name.split(' ').map(n => n[0]).join('')}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1">
@@ -146,9 +99,9 @@ export function CandidateCard({
         <div className="space-y-3">
           <h5 className="text-sm font-semibold text-secondary">Key Projects</h5>
           <div className="flex flex-wrap gap-2">
-            {candidate.projects.map((project) => (
+            {candidate.projects?.map((project, index) => (
               <Badge
-                key={project.title}
+                key={`${candidate.id}-project-${index}`}
                 variant="outline"
                 className="text-xs cursor-pointer hover:bg-accent hover:border-primary transition-colors"
                 onClick={() => handleProjectClick(project)}
@@ -211,27 +164,69 @@ export function CandidateCard({
           <h5 className="text-sm font-semibold text-secondary">Profile Links</h5>
           <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
             {candidate.links.github && (
-              <Button variant="outline" size="sm" className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.github, '_blank')}
+              >
                 <Github className="w-4 h-4 mr-1" />
                 GitHub
               </Button>
             )}
             {candidate.links.portfolio && (
-              <Button variant="outline" size="sm" className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.portfolio, '_blank')}
+              >
                 <ExternalLink className="w-4 h-4 mr-1" />
                 Portfolio
               </Button>
             )}
             {candidate.links.linkedin && (
-              <Button variant="outline" size="sm" className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.linkedin, '_blank')}
+              >
                 <Linkedin className="w-4 h-4 mr-1" />
                 LinkedIn
               </Button>
             )}
             {candidate.links.cv && (
-              <Button variant="outline" size="sm" className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0">
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.cv, '_blank')}
+              >
                 <FileText className="w-4 h-4 mr-1" />
                 CV
+              </Button>
+            )}
+            {candidate.links.transcript && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.transcript, '_blank')}
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                Transcript
+              </Button>
+            )}
+            {candidate.links.visa && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 px-2 hover:bg-accent whitespace-nowrap flex-shrink-0 cursor-pointer"
+                onClick={() => window.open(candidate.links.visa, '_blank')}
+              >
+                <FileText className="w-4 h-4 mr-1" />
+                Visa
               </Button>
             )}
           </div>

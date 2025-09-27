@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
 import { Input } from "./components/ui/input";
@@ -6,13 +6,18 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { CandidateCard } from "./components/CandidateCard";
 import { MainSidebar } from "./components/MainSidebar";
 import { DimensionFilterSidebar } from "./components/DimensionFilterSidebar";
-import { Download, Users, Search, UserCheck, X } from "lucide-react";
-import { mockCandidates, availableDimensions } from "./components/mockData";
+import { Download, Users, Search, UserCheck, X, RefreshCw } from "lucide-react";
+import { availableDimensions } from "./components/mockData";
 import { toast } from "sonner@2.0.3";
 import { Toaster } from "./components/ui/sonner";
+import { apiService } from "./services/api";
+import { Candidate } from "./types/candidate";
+import { transformBackendCandidates } from "./utils/dataTransform";
 
 export default function App() {
-  const [candidates] = useState(mockCandidates);
+  const [candidates, setCandidates] = useState<Candidate[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDimensions, setActiveDimensions] = useState([
     "Project Experience",
@@ -25,6 +30,43 @@ export default function App() {
   const [highlightedRow, setHighlightedRow] = useState<string>("");
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [isCompareMode, setIsCompareMode] = useState(false);
+
+  // 初始化数据
+  useEffect(() => {
+    initializeData();
+  }, []);
+
+  const initializeData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // 初始化演示数据（设置JD + 导入候选人）
+      await apiService.initDemoData();
+
+      // 获取候选人列表（完整数据）
+      const candidatesResponse = await fetch('http://localhost:3002/api/candidates');
+      const candidatesResult = await candidatesResponse.json();
+      const rawCandidatesData = candidatesResult.data.candidates;
+
+      // 转换数据格式
+      const transformedCandidates = transformBackendCandidates(rawCandidatesData);
+      setCandidates(transformedCandidates);
+
+      toast.success("Data loaded successfully");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
+      setError(errorMessage);
+      toast.error(errorMessage);
+      console.error('初始化数据失败:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefreshData = () => {
+    initializeData();
+  };
 
   // Filter candidates based on search query
   const filteredCandidates = useMemo(() => {
@@ -235,7 +277,17 @@ export default function App() {
                     Clear
                   </Button>
                 )}
-                
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefreshData}
+                  disabled={loading}
+                >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  Refresh Data
+                </Button>
+
                 <Button variant="outline" size="sm" onClick={handleExport}>
                   <Download className="w-4 h-4 mr-2" />
                   Export
@@ -249,8 +301,34 @@ export default function App() {
         <div className="flex-1 overflow-y-auto">
           <div className="px-6 py-6 space-y-8">
 
+            {/* 加载状态 */}
+            {loading && (
+              <div className="text-center py-12">
+                <RefreshCw className="w-8 h-8 mx-auto text-muted-foreground mb-4 animate-spin" />
+                <div className="text-lg font-medium text-secondary mb-2">Loading Data...</div>
+                <div className="text-sm text-muted-foreground">Initializing candidates and matching analysis</div>
+              </div>
+            )}
+
+            {/* 错误状态 */}
+            {error && !loading && (
+              <div className="text-center py-12">
+                <div className="max-w-md mx-auto">
+                  <div className="text-red-500 mb-4">
+                    <X className="w-8 h-8 mx-auto" />
+                  </div>
+                  <div className="text-lg font-medium text-secondary mb-2">Loading Failed</div>
+                  <div className="text-sm text-muted-foreground mb-4">{error}</div>
+                  <Button onClick={handleRefreshData} variant="outline">
+                    <RefreshCw className="w-4 h-4 mr-2" />
+                    Retry
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Show message if no results */}
-            {filteredCandidates.length === 0 && searchQuery && (
+            {!loading && !error && filteredCandidates.length === 0 && searchQuery && (
               <div className="text-center py-8">
                 <div className="text-muted-foreground mb-2">No candidates found matching "{searchQuery}"</div>
                 <Button 
@@ -264,7 +342,7 @@ export default function App() {
             )}
 
             {/* Top Section: Comparison Table */}
-            {filteredCandidates.length > 0 && (
+            {!loading && !error && filteredCandidates.length > 0 && (
               <div>
                 <div className="mb-4">
                   <div className="flex items-center justify-between">
@@ -320,7 +398,7 @@ export default function App() {
             )}
 
             {/* Bottom Section: Detailed Candidate Cards */}
-            {filteredCandidates.length > 0 && (
+            {!loading && !error && filteredCandidates.length > 0 && (
               <div>
                 <div className="mb-6">
                   <div className="flex items-center justify-between">
