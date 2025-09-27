@@ -3,14 +3,14 @@ const storage = require('../data/storage');
 const sampleCandidates = require('../data/sampleCandidates');
 const router = express.Router();
 
-// POST /api/candidates/import - 一键导入所有预置候选人
+// POST /api/candidates/import - One-click import all preset candidates
 router.post('/import', (req, res) => {
   try {
     storage.setCandidates(sampleCandidates);
 
     res.json({
       success: true,
-      message: '候选人导入成功',
+      message: 'Candidate import successful',
       data: {
         imported: sampleCandidates.length,
         candidates: sampleCandidates.map(c => ({
@@ -22,25 +22,25 @@ router.post('/import', (req, res) => {
     });
 
   } catch (error) {
-    console.error('候选人导入API错误:', error);
+    console.error('Candidate import API error:', error);
     res.status(500).json({
-      error: error.message || '候选人导入失败',
+      error: error.message || 'Candidate import failed',
       code: 'IMPORT_CANDIDATES_FAILED'
     });
   }
 });
 
-// GET /api/candidates - 获取已导入的候选人列表
+// GET /api/candidates - Retrieve the list of imported candidates
 router.get('/', (req, res) => {
   try {
     const candidates = storage.getCandidates();
 
-    // 可选查询参数
+    // Optional Query Parameters
     const { summary } = req.query;
 
     let responseData;
     if (summary === 'true') {
-      // 返回简要信息
+      // Return brief information
       responseData = candidates.map(candidate => ({
         id: candidate.id,
         name: candidate.profile.name,
@@ -52,7 +52,7 @@ router.get('/', (req, res) => {
         match_pct: candidate.matching?.core_skill_match_pct || 0
       }));
     } else {
-      // 返回完整信息
+      // Return complete information
       responseData = candidates;
     }
 
@@ -65,15 +65,15 @@ router.get('/', (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取候选人列表API错误:', error);
+    console.error('Retrieve candidate list API error:', error);
     res.status(500).json({
-      error: error.message || '获取候选人列表失败',
+      error: error.message || 'Failed to retrieve candidate list',
       code: 'GET_CANDIDATES_FAILED'
     });
   }
 });
 
-// GET /api/candidates/:id - 获取特定候选人详情
+// GET /api/candidates/:id - Retrieve specific candidate details
 router.get('/:id', (req, res) => {
   try {
     const { id } = req.params;
@@ -81,7 +81,7 @@ router.get('/:id', (req, res) => {
 
     if (!candidate) {
       return res.status(404).json({
-        error: '候选人不存在',
+        error: 'Candidate does not exist',
         code: 'CANDIDATE_NOT_FOUND'
       });
     }
@@ -92,34 +92,34 @@ router.get('/:id', (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取候选人详情API错误:', error);
+    console.error('Retrieve candidate details API error:', error);
     res.status(500).json({
-      error: error.message || '获取候选人详情失败',
+      error: error.message || 'Failed to retrieve candidate details.',
       code: 'GET_CANDIDATE_FAILED'
     });
   }
 });
 
-// DELETE /api/candidates - 清除所有候选人
+// DELETE /api/candidates - Clear all candidates
 router.delete('/', (req, res) => {
   try {
     storage.setCandidates([]);
 
     res.json({
       success: true,
-      message: '所有候选人已清除'
+      message: 'All candidates have been cleared.'
     });
 
   } catch (error) {
-    console.error('清除候选人API错误:', error);
+    console.error('Clear candidate API error:', error);
     res.status(500).json({
-      error: error.message || '清除候选人失败',
+      error: error.message || 'Clear candidate failed',
       code: 'CLEAR_CANDIDATES_FAILED'
     });
   }
 });
 
-// GET /api/candidates/stats/overview - 获取候选人统计概览
+// GET /api/candidates/stats/overview - Obtain candidate statistical overview
 router.get('/stats/overview', (req, res) => {
   try {
     const candidates = storage.getCandidates();
@@ -137,13 +137,13 @@ router.get('/stats/overview', (req, res) => {
       });
     }
 
-    // 计算平均经验
+    // Calculate average experience
     const avgExperience = candidates.reduce((sum, c) => {
       const monthsExp = c.experience[0]?.duration_months || 0;
       return sum + monthsExp / 12;
     }, 0) / candidates.length;
 
-    // 统计技能频率
+    // Statistical skill frequency
     const skillCounts = {};
     candidates.forEach(c => {
       c.skills.core_skills.forEach(skill => {
@@ -151,20 +151,20 @@ router.get('/stats/overview', (req, res) => {
       });
     });
 
-    // 获取前5个热门技能
+    // Get the top 5 popular skills
     const topSkills = Object.entries(skillCounts)
       .sort(([,a], [,b]) => b - a)
       .slice(0, 5)
       .map(([skill, count]) => ({ skill, count }));
 
-    // 统计地理分布
+    // Statistical geographic distribution
     const locations = {};
     candidates.forEach(c => {
       const location = c.profile.location.city;
       locations[location] = (locations[location] || 0) + 1;
     });
 
-    // 统计教育水平
+    // Statistical education level
     const educationLevels = {};
     candidates.forEach(c => {
       const degree = c.education[0]?.degree || "N/A";
@@ -183,9 +183,9 @@ router.get('/stats/overview', (req, res) => {
     });
 
   } catch (error) {
-    console.error('获取候选人统计API错误:', error);
+    console.error('Retrieve candidate statistics API error:', error);
     res.status(500).json({
-      error: error.message || '获取候选人统计失败',
+      error: error.message || 'Failed to obtain candidate statistics',
       code: 'GET_CANDIDATES_STATS_FAILED'
     });
   }

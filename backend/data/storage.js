@@ -64,6 +64,15 @@ class Storage {
     return this.candidates.find(candidate => candidate.id === id);
   }
 
+  updateCandidate(id, updatedData) {
+    const index = this.candidates.findIndex(candidate => candidate.id === id);
+    if (index !== -1) {
+      this.candidates[index] = updatedData;
+      return this.candidates[index];
+    }
+    return null;
+  }
+
   // Clear all data
   clear() {
     this.jd = null;

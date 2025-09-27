@@ -8,7 +8,7 @@ import { SkillChips } from "./SkillChips";
 import { FollowUpPrompts } from "./FollowUpPrompts";
 import { ProjectModal } from "./ProjectModal";
 import { WorkExperienceModal } from "./WorkExperienceModal";
-import { Github, ExternalLink, Linkedin, FileText, MapPin, Check, X } from "lucide-react";
+import { Github, ExternalLink, Linkedin, FileText } from "lucide-react";
 import { Candidate } from "../types/candidate";
 
 interface CandidateCardProps {
@@ -17,14 +17,16 @@ interface CandidateCardProps {
   onSelectionChange?: (candidateId: string, selected: boolean) => void;
   selectionDisabled?: boolean;
   showSelection?: boolean;
+  hasJDData?: boolean;
 }
 
-export function CandidateCard({ 
-  candidate, 
-  isSelected = false, 
-  onSelectionChange, 
-  selectionDisabled = false, 
-  showSelection = false 
+export function CandidateCard({
+  candidate,
+  isSelected = false,
+  onSelectionChange,
+  selectionDisabled = false,
+  showSelection = false,
+  hasJDData = false
 }: CandidateCardProps) {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -83,11 +85,13 @@ export function CandidateCard({
 
         </div>
 
-        {/* Core Skill Match */}
-        <div className="space-y-3">
-          <h5 className="text-sm font-semibold text-secondary">Core Skill Match</h5>
-          <SkillProgressBar percentage={candidate.coreSkillMatch} />
-        </div>
+        {/* Core Skill Match - Only show if JD has been imported */}
+        {hasJDData && (
+          <div className="space-y-3">
+            <h5 className="text-sm font-semibold text-secondary">Core Skill Match</h5>
+            <SkillProgressBar percentage={candidate.coreSkillMatch || 0} />
+          </div>
+        )}
 
         {/* Top 5 Skills */}
         <div className="space-y-3">
@@ -117,8 +121,8 @@ export function CandidateCard({
           <div>
             <h5 className="text-sm font-semibold text-secondary mb-2">Education</h5>
             <div>
-              <div className="text-sm font-medium">{candidate.education.school}</div>
-              <div className="text-xs text-muted-foreground">{candidate.education.degree}</div>
+              <div className="text-sm font-medium">{candidate.education.degree}</div>
+              <div className="text-xs text-muted-foreground">{candidate.education.school}</div>
             </div>
           </div>
 
@@ -234,8 +238,10 @@ export function CandidateCard({
 
 
 
-        {/* Follow-up Prompts */}
-        <FollowUpPrompts prompts={candidate.followUpPrompts} />
+        {/* Follow-up Prompts - Only show if JD has been imported */}
+        {hasJDData && (
+          <FollowUpPrompts prompts={candidate.followUpPrompts} />
+        )}
       </div>
 
       <ProjectModal

@@ -3,21 +3,21 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
-// 导入路由
+// Import route
 const jdRoutes = require('./routes/jd');
 const candidatesRoutes = require('./routes/candidates');
 const matchingRoutes = require('./routes/matching');
 
-// 导入服务（用于健康检查）
+// Import Service (for health check)
 const geminiService = require('./services/geminiService');
 const storage = require('./data/storage');
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// 中间件配置
+// Middleware configuration
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:5173'],
+  origin: ['http://localhost:5173', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176', 'http://localhost:3000', 'http://localhost:3001', 'http://127.0.0.1:5173'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -26,18 +26,18 @@ app.use(cors({
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
-// 请求日志中间件
+// Request Log Middleware
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
   next();
 });
 
-// API路由
+// API route
 app.use('/api/jd', jdRoutes);
 app.use('/api/candidates', candidatesRoutes);
 app.use('/api/match', matchingRoutes);
 
-// 根路径
+// Root path
 app.get('/', (req, res) => {
   res.json({
     message: 'Candidate Compare Board Backend API',
@@ -69,13 +69,13 @@ app.get('/', (req, res) => {
   });
 });
 
-// 健康检查端点
+// Health Check Endpoint
 app.get('/health', async (req, res) => {
   try {
-    // 检查Gemini API连接
+    // Check Gemini API connection
     const geminiHealthy = await geminiService.healthCheck();
 
-    // 检查存储状态
+    // Check storage status
     const storageStatus = storage.getStatus();
 
     const health = {
@@ -100,7 +100,7 @@ app.get('/health', async (req, res) => {
     res.status(httpStatus).json(health);
 
   } catch (error) {
-    console.error('健康检查失败:', error);
+    console.error('Health check failed:', error);
     res.status(503).json({
       status: 'unhealthy',
       timestamp: new Date().toISOString(),
@@ -109,7 +109,7 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// API状态端点
+// API status endpoint
 app.get('/api/status', (req, res) => {
   const storageStatus = storage.getStatus();
 
@@ -124,7 +124,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// 404处理
+// 404 error handling
 app.use('*', (req, res) => {
   res.status(404).json({
     error: 'API endpoint not found',
@@ -144,9 +144,9 @@ app.use('*', (req, res) => {
   });
 });
 
-// 全局错误处理
+// Global error handling
 app.use((error, req, res, next) => {
-  console.error('服务器错误:', error);
+  console.error('Server error:', error);
 
   res.status(500).json({
     error: 'Internal server error',
@@ -156,33 +156,33 @@ app.use((error, req, res, next) => {
   });
 });
 
-// 启动服务器
+// Start the server
 app.listen(PORT, () => {
   console.log(`
-🚀 Candidate Compare Board Backend启动成功!
-📍 端口: ${PORT}
-🌐 访问: http://localhost:${PORT}
-📋 健康检查: http://localhost:${PORT}/health
-📚 API文档: http://localhost:${PORT}/
+🚀 Candidate Compare Board Backend started successfully!
+📍 Port: ${PORT}
+🌐 Access: http://localhost:${PORT}
+📋 Health check: http://localhost:${PORT}/health
+📚 API docs: http://localhost:${PORT}/
 
-环境配置:
+Environment:
 - Node.js: ${process.version}
-- Gemini API: ${process.env.GEMINI_API_KEY ? '已配置✅' : '未配置❌'}
-- 开发模式: ${process.env.NODE_ENV || 'development'}
+- Gemini API: ${process.env.GEMINI_API_KEY ? 'Configured ✅' : 'Not configured ❌'}
+- Mode: ${process.env.NODE_ENV || 'development'}
 
-${process.env.GEMINI_API_KEY ? '' : '⚠️  请在.env文件中配置GEMINI_API_KEY'}
+${process.env.GEMINI_API_KEY ? '' : '⚠️  Please configure GEMINI_API_KEY in .env file'}
   `);
 });
 
-// 优雅关闭
+// Graceful shutdown
 process.on('SIGTERM', () => {
-  console.log('收到SIGTERM信号，优雅关闭服务器...');
+  console.log('Received SIGTERM signal, gracefully shutting down server...');
   storage.clear();
   process.exit(0);
 });
 
 process.on('SIGINT', () => {
-  console.log('\n收到SIGINT信号，优雅关闭服务器...');
+  console.log('\nReceived SIGINT signal, gracefully shutting down server...');
   storage.clear();
   process.exit(0);
 });

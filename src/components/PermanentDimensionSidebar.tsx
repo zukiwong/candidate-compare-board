@@ -6,7 +6,7 @@ import { Label } from "./ui/label";
 import { ScrollArea } from "./ui/scroll-area";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Plus, GripVertical, Settings } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface PermanentDimensionSidebarProps {
   activeDimensions: string[];
@@ -147,8 +147,8 @@ export function PermanentDimensionSidebar({
                       id={dimension}
                       checked={isActive}
                       disabled={isFixed}
-                      onCheckedChange={(checked) => 
-                        onToggleDimension(dimension, checked as boolean)
+                      onCheckedChange={(checked: boolean) =>
+                        onToggleDimension(dimension, checked)
                       }
                       className="flex-shrink-0"
                     />

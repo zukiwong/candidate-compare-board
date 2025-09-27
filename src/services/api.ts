@@ -2,9 +2,9 @@ import { Candidate } from '../types/candidate';
 
 const API_BASE_URL = 'http://localhost:3002/api';
 
-// API服务类
+// API Service Class
 class ApiService {
-  // 设置演示JD
+  // Set demonstration JD
   async setDemoJD() {
     const response = await fetch(`${API_BASE_URL}/jd/demo`, {
       method: 'POST',
@@ -20,7 +20,7 @@ class ApiService {
     return response.json();
   }
 
-  // 导入候选人数据
+  // Import candidate data
   async importCandidates() {
     const response = await fetch(`${API_BASE_URL}/candidates/import`, {
       method: 'POST',
@@ -36,7 +36,7 @@ class ApiService {
     return response.json();
   }
 
-  // 获取候选人列表（简要信息）
+  // Retrieve candidate list (brief information)
   async getCandidatesSummary(): Promise<Candidate[]> {
     const response = await fetch(`${API_BASE_URL}/candidates?summary=true`);
 
@@ -48,7 +48,7 @@ class ApiService {
     return result.data.candidates;
   }
 
-  // 获取候选人详细信息
+  // Retrieve candidate's detailed information
   async getCandidateDetails(candidateId: string): Promise<Candidate> {
     const response = await fetch(`${API_BASE_URL}/candidates/${candidateId}`);
 
@@ -60,7 +60,7 @@ class ApiService {
     return result.data;
   }
 
-  // 计算单个候选人匹配度
+  // Calculate the match degree of a single candidate
   async calculateCandidateMatch(candidateId: string) {
     const response = await fetch(`${API_BASE_URL}/match/${candidateId}`, {
       method: 'POST',
@@ -76,10 +76,10 @@ class ApiService {
     return response.json();
   }
 
-  // 批量计算所有候选人匹配度
+  // Batch calculate the match degree of all candidates
   async batchCalculateMatches() {
     const response = await fetch(`${API_BASE_URL}/match/batch/all`, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
@@ -92,7 +92,24 @@ class ApiService {
     return response.json();
   }
 
-  // 获取当前JD信息
+  // Parse JD text
+  async parseJD(jdText: string) {
+    const response = await fetch(`${API_BASE_URL}/jd/parse`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jdText }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to parse JD');
+    }
+
+    return response.json();
+  }
+
+  // Retrieve current JD information
   async getCurrentJD() {
     const response = await fetch(`${API_BASE_URL}/jd`);
 
@@ -103,7 +120,18 @@ class ApiService {
     return response.json();
   }
 
-  // 初始化演示数据（设置JD + 导入候选人）
+  // Retrieve JD status
+  async getJDStatus() {
+    const response = await fetch(`${API_BASE_URL}/jd/status`);
+
+    if (!response.ok) {
+      throw new Error('Failed to get JD status');
+    }
+
+    return response.json();
+  }
+
+  // Initialize demonstration data (set JD + import candidates)
   async initDemoData() {
     try {
       await this.setDemoJD();
@@ -115,6 +143,5 @@ class ApiService {
   }
 }
 
-// 导出单例实例
 export const apiService = new ApiService();
 export default apiService;

@@ -22,7 +22,7 @@ const sampleCandidates = [
         github: "https://github.com/zukiwong",
         portfolio: "https://drive.google.com/file/d/1IXBxdC6lOyHHIeDuO_1hhcLIToxAgdlh/view",
         linkedin: "https://www.linkedin.com/in/zuki-wong/",
-        resume: "assets/CV.pdf",
+        resume: "/assets/ZukiWong_CV.pdf",
         transcript: "assets/academic-transcript.pdf",
         visa: "assets/visa-status.pdf"
       },
@@ -40,7 +40,7 @@ const sampleCandidates = [
     education: [
       {
         institution: "University of Auckland",
-        degree: "Bachelor of Engineering in Software Engineering",
+        degree: "Bachelor of Software Engineering",
         graduation_date: "2023-12",
         gpa: 3.8,
         relevant_coursework: ["Data Structures", "Algorithms", "Web Development", "Database Systems"],
@@ -122,7 +122,13 @@ const sampleCandidates = [
       ]
     },
     matching: {
-      core_skill_match_pct: 92,
+      core_skill_match_pct: 88,
+      technical_skills_score: 92,
+      experience_score: 85,
+      project_complexity_score: 90,
+      education_score: 88,
+      soft_skills_score: 86,
+      portfolio_quality_score: 94,
       strengths: [
         "Strong React and frontend development skills",
         "Real project experience with modern tech stack",
@@ -133,9 +139,9 @@ const sampleCandidates = [
         "Could benefit from more DevOps knowledge"
       ],
       ai_suggested_questions: [
-        "Tell me about your experience building the e-commerce platform and the challenges you faced.",
-        "How did you handle real-time features in your task management app?",
-        "What did you learn during your internship at TechStart NZ?"
+        "I see you built an e-commerce platform handling 1000+ concurrent users. What was the biggest scaling challenge you encountered?",
+        "Your task management app includes real-time updates. Can you walk me through your WebSocket implementation approach?",
+        "Looking at your TechStart NZ internship, which project had the steepest learning curve and why?"
       ]
     },
     meta: {
@@ -164,7 +170,7 @@ const sampleCandidates = [
         github: "https://github.com/zukiwong",
         portfolio: "https://drive.google.com/file/d/1IXBxdC6lOyHHIeDuO_1hhcLIToxAgdlh/view",
         linkedin: "https://www.linkedin.com/in/zuki-wong/",
-        resume: "assets/CV.pdf",
+        resume: "/assets/ZukiWong_CV.pdf",
         transcript: "assets/academic-transcript.pdf",
         visa: "assets/visa-status.pdf"
       },
@@ -182,7 +188,7 @@ const sampleCandidates = [
     education: [
       {
         institution: "Victoria University of Wellington",
-        degree: "Bachelor of Science in Computer Science",
+        degree: "Bachelor of Computer Science",
         graduation_date: "2024-12",
         gpa: 3.6,
         relevant_coursework: ["Machine Learning", "Data Mining", "Statistics", "Python Programming"],
@@ -250,7 +256,13 @@ const sampleCandidates = [
       ]
     },
     matching: {
-      core_skill_match_pct: 78,
+      core_skill_match_pct: 79,
+      technical_skills_score: 85,
+      experience_score: 82,
+      project_complexity_score: 76,
+      education_score: 84,
+      soft_skills_score: 90,
+      portfolio_quality_score: 71,
       strengths: [
         "Strong data analysis and Python skills",
         "Real-world internship experience",
@@ -261,9 +273,9 @@ const sampleCandidates = [
         "Needs more experience with modern web frameworks"
       ],
       ai_suggested_questions: [
-        "How did you approach building the grade prediction model and what challenges did you encounter?",
-        "Tell me about your experience working with city data during your internship.",
-        "How would you apply your data analysis skills to improve our product?"
+        "Your grade prediction model achieved 89% accuracy. What was your feature engineering strategy?",
+        "Working with city data sounds complex. Which data quality issues did you encounter most frequently?",
+        "Looking at your analytical background, where do you see the biggest opportunities for data-driven improvements in our product?"
       ]
     },
     meta: {
@@ -292,7 +304,7 @@ const sampleCandidates = [
         github: "https://github.com/zukiwong",
         portfolio: "https://drive.google.com/file/d/1IXBxdC6lOyHHIeDuO_1hhcLIToxAgdlh/view",
         linkedin: "https://www.linkedin.com/in/zuki-wong/",
-        resume: "assets/CV.pdf",
+        resume: "/assets/ZukiWong_CV.pdf",
         transcript: "assets/academic-transcript.pdf",
         visa: "assets/visa-status.pdf"
       },
@@ -310,7 +322,7 @@ const sampleCandidates = [
     education: [
       {
         institution: "AUT University",
-        degree: "Bachelor of Design in Digital Design",
+        degree: "Bachelor of Digital Design",
         graduation_date: "2023-11",
         gpa: 3.9,
         relevant_coursework: ["UI/UX Design", "Web Design", "Design Thinking", "Front-end Development"],
@@ -378,7 +390,13 @@ const sampleCandidates = [
       ]
     },
     matching: {
-      core_skill_match_pct: 65,
+      core_skill_match_pct: 73,
+      technical_skills_score: 68,
+      experience_score: 89,
+      project_complexity_score: 85,
+      education_score: 91,
+      soft_skills_score: 95,
+      portfolio_quality_score: 88,
       strengths: [
         "Excellent design skills and user-centered approach",
         "Strong portfolio with real-world impact",
@@ -389,9 +407,9 @@ const sampleCandidates = [
         "Could strengthen technical programming skills"
       ],
       ai_suggested_questions: [
-        "Walk me through your design process for the mental health support app.",
-        "How did you measure the success of your banking app redesign?",
-        "How do you balance user needs with business requirements in your designs?"
+        "The mental health app shows impressive user engagement. What design decisions drove those results?",
+        "I'm curious about your banking app redesign - which user research methods proved most valuable?",
+        "From your experience, what's the trickiest part about balancing user advocacy with business constraints?"
       ]
     },
     meta: {
@@ -420,7 +438,7 @@ const sampleCandidates = [
         github: "https://github.com/zukiwong",
         portfolio: "https://drive.google.com/file/d/1IXBxdC6lOyHHIeDuO_1hhcLIToxAgdlh/view",
         linkedin: "https://www.linkedin.com/in/zuki-wong/",
-        resume: "assets/CV.pdf",
+        resume: "/assets/ZukiWong_CV.pdf",
         transcript: "assets/academic-transcript.pdf",
         visa: "assets/visa-status.pdf"
       },
@@ -438,7 +456,7 @@ const sampleCandidates = [
     education: [
       {
         institution: "University of Canterbury",
-        degree: "Bachelor of Engineering in Computer Engineering",
+        degree: "Bachelor of Computer Engineering",
         graduation_date: "2023-12",
         gpa: 3.7,
         relevant_coursework: ["Cloud Computing", "DevOps", "Network Security", "System Administration"],
@@ -506,7 +524,13 @@ const sampleCandidates = [
       ]
     },
     matching: {
-      core_skill_match_pct: 72,
+      core_skill_match_pct: 81,
+      technical_skills_score: 94,
+      experience_score: 87,
+      project_complexity_score: 89,
+      education_score: 83,
+      soft_skills_score: 78,
+      portfolio_quality_score: 82,
       strengths: [
         "Strong DevOps and cloud infrastructure experience",
         "Proven ability to work on complex technical projects",
@@ -517,9 +541,9 @@ const sampleCandidates = [
         "Could benefit from more software development focus"
       ],
       ai_suggested_questions: [
-        "Tell me about the most challenging aspect of the university cloud migration project.",
-        "How do you approach troubleshooting issues in a distributed system?",
-        "What monitoring and alerting strategies do you recommend for microservices?"
+        "The university cloud migration sounds massive. Which technical obstacle surprised you the most?",
+        "When a distributed system starts acting up, what's your debugging methodology?",
+        "For microservices monitoring, which metrics do you prioritize and why?"
       ]
     },
     meta: {
@@ -548,7 +572,7 @@ const sampleCandidates = [
         github: "https://github.com/zukiwong",
         portfolio: "https://drive.google.com/file/d/1IXBxdC6lOyHHIeDuO_1hhcLIToxAgdlh/view",
         linkedin: "https://www.linkedin.com/in/zuki-wong/",
-        resume: "assets/CV.pdf",
+        resume: "/assets/ZukiWong_CV.pdf",
         transcript: "assets/academic-transcript.pdf",
         visa: "assets/visa-status.pdf"
       },
@@ -566,7 +590,7 @@ const sampleCandidates = [
     education: [
       {
         institution: "University of Auckland",
-        degree: "Bachelor of Science in Computer Science",
+        degree: "Bachelor of Computer Science",
         graduation_date: "2024-12",
         gpa: 3.8,
         relevant_coursework: ["Full Stack Development", "Database Systems", "Software Engineering", "API Design"],
@@ -647,7 +671,13 @@ const sampleCandidates = [
       ]
     },
     matching: {
-      core_skill_match_pct: 95,
+      core_skill_match_pct: 93,
+      technical_skills_score: 96,
+      experience_score: 91,
+      project_complexity_score: 94,
+      education_score: 89,
+      soft_skills_score: 92,
+      portfolio_quality_score: 90,
       strengths: [
         "Excellent full-stack development skills",
         "Strong professional experience at Xero",
@@ -659,9 +689,9 @@ const sampleCandidates = [
         "Mobile development experience could be stronger"
       ],
       ai_suggested_questions: [
-        "Tell me about your experience working at Xero and what you learned about enterprise software development.",
-        "How did you approach the delivery route optimization problem and what algorithms did you consider?",
-        "What's the most challenging technical problem you've solved in your projects?"
+        "Working at Xero must have been insightful. What's the biggest difference between enterprise and startup development?",
+        "Your delivery route optimization is intriguing. Which algorithms did you experiment with before settling on your final approach?",
+        "Among all your projects, which technical challenge kept you up at night and how did you crack it?"
       ]
     },
     meta: {

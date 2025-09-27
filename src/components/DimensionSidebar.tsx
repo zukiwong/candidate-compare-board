@@ -7,7 +7,7 @@ import { ScrollArea } from "./ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "./ui/sheet";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog";
 import { Settings, Plus, GripVertical } from "lucide-react";
-import { toast } from "sonner@2.0.3";
+import { toast } from "sonner";
 
 interface DimensionSidebarProps {
   activeDimensions: string[];
@@ -143,8 +143,8 @@ export function DimensionSidebar({
                         id={dimension}
                         checked={isActive}
                         disabled={isFixed}
-                        onCheckedChange={(checked) => 
-                          onToggleDimension(dimension, checked as boolean)
+                        onCheckedChange={(checked: boolean) =>
+                          onToggleDimension(dimension, checked)
                         }
                       />
                       

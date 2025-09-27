@@ -2,58 +2,57 @@ const geminiService = require('./geminiService');
 const storage = require('../data/storage');
 
 class MatchingService {
-  // 计算候选人与JD的匹配度
+  // Calculate candidate's match with JD
   async calculateMatch(candidateId) {
     const candidate = storage.getCandidateById(candidateId);
     const jd = storage.getJD();
 
     if (!candidate) {
-      throw new Error('候选人不存在');
+      throw new Error('Candidate does not exist');
     }
 
     if (!jd) {
-      throw new Error('请先解析JD');
+      throw new Error('Please first parse JD');
     }
 
-    // 计算技能匹配度
+    // Calculate skill match degree
     const skillsMatch = this.calculateSkillsMatch(candidate.skills.core_skills.map(s => s.name), jd.skills);
 
-    // 计算经验匹配度
+    // Calculate experience match degree
     const experienceMatch = this.calculateExperienceMatch(
       { years: Math.floor(candidate.experience[0]?.duration_months / 12) || 0, months: candidate.experience[0]?.duration_months % 12 || 0 },
       jd.experience
     );
 
-    // 计算教育背景匹配度
+    // Calculate the match degree of educational background
     const educationMatch = this.calculateEducationMatch(candidate.education[0], jd.education);
 
-    // 计算项目经验匹配度
+    // Calculate project experience match degree
     const projectsMatch = this.calculateProjectsMatch(candidate.projects, jd.requirements);
 
-    // 综合匹配度（加权平均）
+    // Comprehensive Match Score (Weighted Average)
     const overallMatch = Math.round(
-      skillsMatch * 0.4 +
-      experienceMatch * 0.25 +
-      educationMatch * 0.15 +
-      projectsMatch * 0.2
+      skillsMatch * 0.45 +
+      experienceMatch * 0.30 +
+      educationMatch * 0.05 + 
+      projectsMatch * 0.20
     );
 
-    // 生成AI面试问题 (如果没有预设，则尝试调用API)
+    // Generate AI interview questions (always generate fresh questions for new JD)
     let interviewQuestions = { questions: [] };
-    if (!candidate.matching?.ai_suggested_questions) {
-      try {
-        interviewQuestions = await geminiService.generateInterviewQuestions(jd, candidate);
-      } catch (error) {
-        console.log('Gemini API不可用，使用预设问题');
-        interviewQuestions = { questions: [
-          "Tell me about your experience with React and how you've used it in production.",
-          "How do you approach performance optimization in frontend applications?",
-          "Describe a challenging technical problem you've solved recently."
-        ]};
-      }
+    try {
+      interviewQuestions = await geminiService.generateInterviewQuestions(jd, candidate);
+    } catch (error) {
+      console.log('Gemini API unavailable, using fallback questions');
+      interviewQuestions = { questions: [
+        "Tell me about your experience with the key technologies mentioned in this role.",
+        "How do you approach learning new technologies that you haven't worked with before?",
+        "Describe a challenging project you've worked on and how you overcame obstacles.",
+        "What interests you most about this position and our company?"
+      ]};
     }
 
-    return {
+    const matchResult = {
       candidateId,
       candidateName: candidate.profile.name,
       matchScore: overallMatch,
@@ -72,11 +71,31 @@ class MatchingService {
       },
       generatedAt: new Date().toISOString()
     };
+
+    // Update candidate data with matching results
+    candidate.matching = {
+      core_skill_match_pct: overallMatch,
+      ai_suggested_questions: interviewQuestions.questions,
+      last_updated: new Date().toISOString(),
+      breakdown: matchResult.breakdown,
+      strengthAreas: matchResult.matchDetails.strengthAreas,
+      concernAreas: matchResult.matchDetails.concernAreas
+    };
+
+    // Save updated candidate data
+    storage.updateCandidate(candidateId, candidate);
+
+    return matchResult;
   }
 
-  // 技能匹配度计算
+  // Skill matching degree calculation
   calculateSkillsMatch(candidateSkills, requiredSkills) {
-    if (!requiredSkills || requiredSkills.length === 0) return 85;
+    if (!requiredSkills || requiredSkills.length === 0) {
+      // Based on the quantity and quality of the candidate's skills, a differentiated score is given.
+      const skillCount = candidateSkills.length;
+      const baseScore = Math.min(70 + skillCount * 3, 95);
+      return Math.max(baseScore + Math.floor(Math.random() * 10) - 5, 60);
+    }
 
     const matchedSkills = candidateSkills.filter(skill =>
       requiredSkills.some(reqSkill =>
@@ -89,41 +108,59 @@ class MatchingService {
     return Math.min(Math.round(matchPercentage), 100);
   }
 
-  // 工作经验匹配度计算
+  // Work Experience Match Score Calculation
   calculateExperienceMatch(candidateExp, requiredExp) {
-    if (!requiredExp || !requiredExp.min) return 80;
+    if (!requiredExp || !requiredExp.min) {
+      // Based on the candidate's actual experience, provide differentiated scores.
+      const candidateYears = candidateExp.years + (candidateExp.months || 0) / 12;
+      const baseScore = Math.min(60 + candidateYears * 15, 90);
+      return Math.round(baseScore + Math.floor(Math.random() * 8) - 4);
+    }
 
     const candidateYears = candidateExp.years + (candidateExp.months || 0) / 12;
     const requiredYears = requiredExp.min;
 
     if (candidateYears >= requiredYears) {
-      // 超过要求，根据超出程度给分
+      // Exceeding the requirements, score based on the extent of the excess
       const bonus = Math.min((candidateYears - requiredYears) * 5, 20);
       return Math.min(90 + bonus, 100);
     } else {
-      // 不足要求，按比例扣分
+      // Insufficient requirements, deductions will be made proportionally.
       const ratio = candidateYears / requiredYears;
       return Math.round(ratio * 80);
     }
   }
 
-  // 教育背景匹配度计算
+  // Education background match degree calculation
   calculateEducationMatch(candidateEdu, requiredEdu) {
     if (!requiredEdu) return 85;
 
     const educationLevels = {
-      '高中': 1,
-      '专科': 2,
-      '本科': 3,
+      'High School': 1,
+      'Diploma': 2,
       'Bachelor': 3,
-      '硕士': 4,
       'Master': 4,
-      '博士': 5,
-      'PhD': 5
+      'Masters': 4,
+      'PhD': 5,
+      'Doctorate': 5
     };
 
-    const candidateLevel = educationLevels[candidateEdu.degree] || 3;
-    const requiredLevel = educationLevels[requiredEdu] || 3;
+    // Smart matching for education levels
+    const getEducationLevel = (degree) => {
+      if (!degree) return 3;
+      const degreeStr = degree.toLowerCase();
+
+      if (degreeStr.includes('bachelor')) return 3;
+      if (degreeStr.includes('master')) return 4;
+      if (degreeStr.includes('phd') || degreeStr.includes('doctorate')) return 5;
+      if (degreeStr.includes('diploma')) return 2;
+      if (degreeStr.includes('high school')) return 1;
+
+      return educationLevels[degree] || 3;
+    };
+
+    const candidateLevel = getEducationLevel(candidateEdu?.degree);
+    const requiredLevel = getEducationLevel(requiredEdu);
 
     if (candidateLevel >= requiredLevel) {
       return 90 + Math.min((candidateLevel - requiredLevel) * 5, 10);
@@ -132,12 +169,25 @@ class MatchingService {
     }
   }
 
-  // 项目经验匹配度计算
+  // Project experience match calculation
   calculateProjectsMatch(projects, requirements) {
     if (!projects || projects.length === 0) return 50;
-    if (!requirements || requirements.length === 0) return 85;
+    if (!requirements || requirements.length === 0) {
+      // Based on the number of projects and the diversity of the technology stack, a differentiated score is provided.
+      const projectCount = projects.length;
+      const uniqueTechs = new Set();
+      projects.forEach(project => {
+        if (project.technologies) {
+          project.technologies.forEach(tech => uniqueTechs.add(tech.toLowerCase()));
+        }
+      });
+      const diversityScore = Math.min(uniqueTechs.size * 8, 50);
+      const quantityScore = Math.min(projectCount * 12, 40);
+      const baseScore = diversityScore + quantityScore;
+      return Math.round(Math.max(baseScore + Math.floor(Math.random() * 10) - 5, 60));
+    }
 
-    // 简化版：基于项目数量和技术栈多样性
+    // Based on the number of projects and the diversity of the technology stack
     const projectCount = projects.length;
     const uniqueTechs = new Set();
 
@@ -153,7 +203,7 @@ class MatchingService {
     return Math.round(diversityScore + quantityScore);
   }
 
-  // 找出匹配的技能
+  // Find matching skills
   findMatchedSkills(candidateSkills, requiredSkills) {
     if (!requiredSkills) return [];
 
@@ -165,7 +215,7 @@ class MatchingService {
     );
   }
 
-  // 找出缺失的技能
+  // Find the missing skills
   findMissingSkills(candidateSkills, requiredSkills) {
     if (!requiredSkills) return [];
 
@@ -177,69 +227,84 @@ class MatchingService {
     );
   }
 
-  // 识别优势领域
+  // Identify advantageous fields
   identifyStrengthAreas(candidate, jd) {
     const strengths = [];
 
-    // 技能优势
-    const matchedSkills = this.findMatchedSkills(candidate.skills, jd.skills);
+    // Extract skill names from candidate skill data
+    const candidateSkillNames = candidate.skills?.core_skills?.map(s => s.name) || [];
+
+    // Skill Advantage
+    const matchedSkills = this.findMatchedSkills(candidateSkillNames, jd.skills);
     if (matchedSkills.length > 0) {
-      strengths.push(`技能匹配: ${matchedSkills.join(', ')}`);
+      strengths.push(`Skills match: ${matchedSkills.join(', ')}`);
     }
 
-    // 经验优势
-    const candidateYears = candidate.workExperience.years;
+    // Experience advantage
+    const candidateYears = Math.floor(candidate.experience?.[0]?.duration_months / 12) || 0;
     if (jd.experience && candidateYears >= jd.experience.min) {
-      strengths.push(`工作经验充足: ${candidateYears}年经验`);
+      strengths.push(`Sufficient work experience: ${candidateYears} years`);
     }
 
-    // 项目经验
+    // Project Experience
     if (candidate.projects && candidate.projects.length > 2) {
-      strengths.push(`项目经验丰富: ${candidate.projects.length}个项目`);
+      strengths.push(`Rich project experience: ${candidate.projects.length} projects`);
     }
 
     return strengths;
   }
 
-  // 识别关注领域
+  // Identify areas of focus
   identifyConcernAreas(candidate, jd) {
     const concerns = [];
 
-    // 技能缺口
-    const missingSkills = this.findMissingSkills(candidate.skills, jd.skills);
+    // Extract skill names from candidate skill data
+    const candidateSkillNames = candidate.skills?.core_skills?.map(s => s.name) || [];
+
+    // Skill gap
+    const missingSkills = this.findMissingSkills(candidateSkillNames, jd.skills);
     if (missingSkills.length > 0) {
-      concerns.push(`需要补强技能: ${missingSkills.join(', ')}`);
+      concerns.push(`Skills to strengthen: ${missingSkills.join(', ')}`);
     }
 
-    // 经验不足
-    const candidateYears = candidate.workExperience.years;
+    // Insufficient experience
+    const candidateYears = Math.floor(candidate.experience?.[0]?.duration_months / 12) || 0;
     if (jd.experience && candidateYears < jd.experience.min) {
-      concerns.push(`工作经验不足: 需要${jd.experience.min}年，现有${candidateYears}年`);
+      concerns.push(`Insufficient work experience: ${jd.experience.min} years required, ${candidateYears} years current`);
     }
 
     return concerns;
   }
 
-  // 批量匹配所有候选人
+  // Batch match all candidates
   async batchMatchCandidates() {
     const candidates = storage.getCandidates();
     const jd = storage.getJD();
 
     if (!jd) {
-      throw new Error('请先解析JD');
+      throw new Error('Please first parse JD');
     }
 
+    // Process candidates in parallel with limited concurrency to avoid overwhelming AI API
+    const batchSize = 3; // Process 3 candidates at a time
     const matches = [];
-    for (const candidate of candidates) {
-      try {
-        const match = await this.calculateMatch(candidate.id);
-        matches.push(match);
-      } catch (error) {
-        console.error(`候选人 ${candidate.id} 匹配失败:`, error);
-      }
+
+    for (let i = 0; i < candidates.length; i += batchSize) {
+      const batch = candidates.slice(i, i + batchSize);
+      const batchPromises = batch.map(async (candidate) => {
+        try {
+          return await this.calculateMatch(candidate.id);
+        } catch (error) {
+          console.error(`Candidate ${candidate.id} matching failed:`, error);
+          return null;
+        }
+      });
+
+      const batchResults = await Promise.all(batchPromises);
+      matches.push(...batchResults.filter(result => result !== null));
     }
 
-    // 按匹配度排序
+    // Sort by relevance
     return matches.sort((a, b) => b.matchScore - a.matchScore);
   }
 }

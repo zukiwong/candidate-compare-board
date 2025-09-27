@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Button } from "./ui/button";
 import { 
   LayoutDashboard, 
@@ -8,8 +8,8 @@ import {
   Calendar,
   LogOut
 } from "lucide-react";
-import logo from "figma:asset/e2d8b480c5a427d4be92cf3c3dde8a8779106e90.png";
-import avatar from "../assets/avatar.png";
+const logo = "/assets/e2d8b480c5a427d4be92cf3c3dde8a8779106e90.png";
+const avatar = "/assets/avatar.png";
 
 export function MainSidebar() {
   const [activeTab, setActiveTab] = useState("candidates");

@@ -1,16 +1,16 @@
 import { useState, useMemo, useEffect } from "react";
 import { Button } from "./components/ui/button";
 import { Badge } from "./components/ui/badge";
-import { Input } from "./components/ui/input";
 import { ComparisonTable } from "./components/ComparisonTable";
 import { CandidateCard } from "./components/CandidateCard";
 import { MainSidebar } from "./components/MainSidebar";
 import { DimensionFilterSidebar } from "./components/DimensionFilterSidebar";
-import { Download, Users, Search, UserCheck, X, RefreshCw } from "lucide-react";
-import { availableDimensions } from "./components/mockData";
-import { toast } from "sonner@2.0.3";
+import { JDImportModal } from "./components/JDImportModal";
+import { FileText, Users, Search, UserCheck, X, RefreshCw } from "lucide-react";
+import { availableDimensions as initialAvailableDimensions } from "./components/mockData";
+import { toast } from "sonner";
 import { Toaster } from "./components/ui/sonner";
-import { apiService } from "./services/api";
+// import { apiService } from "./services/api"; // Moved to JDImportModal
 import { Candidate } from "./types/candidate";
 import { transformBackendCandidates } from "./utils/dataTransform";
 
@@ -21,17 +21,20 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeDimensions, setActiveDimensions] = useState([
     "Project Experience",
-    "Education", 
+    "Education",
     "Work Experience",
     "Location / Availability",
     "Candidate Links",
     "Soft Skills"
   ]);
+  const [availableDimensions, setAvailableDimensions] = useState<string[]>(initialAvailableDimensions);
   const [highlightedRow, setHighlightedRow] = useState<string>("");
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [isCompareMode, setIsCompareMode] = useState(false);
+  const [isJDImportOpen, setIsJDImportOpen] = useState(false);
+  const [hasJD, setHasJD] = useState(false);
 
-  // 初始化数据
+  // Initialize data
   useEffect(() => {
     initializeData();
   }, []);
@@ -41,24 +44,75 @@ export default function App() {
       setLoading(true);
       setError(null);
 
-      // 初始化演示数据（设置JD + 导入候选人）
-      await apiService.initDemoData();
+      // Check JD status
+      try {
+        const jdStatusResponse = await fetch('http://localhost:3002/api/jd/status');
+        if (jdStatusResponse.ok) {
+          const jdStatusResult = await jdStatusResponse.json();
+          setHasJD(jdStatusResult.data.hasJD);
+        }
+      } catch (jdError) {
+        console.log('无法获取JD状态，默认为false');
+        setHasJD(false);
+      }
 
-      // 获取候选人列表（完整数据）
+      // Check if there is candidate data
       const candidatesResponse = await fetch('http://localhost:3002/api/candidates');
-      const candidatesResult = await candidatesResponse.json();
-      const rawCandidatesData = candidatesResult.data.candidates;
 
-      // 转换数据格式
-      const transformedCandidates = transformBackendCandidates(rawCandidatesData);
-      setCandidates(transformedCandidates);
+      if (candidatesResponse.ok) {
+        const candidatesResult = await candidatesResponse.json();
+        const rawCandidatesData = candidatesResult.data.candidates;
 
-      toast.success("Data loaded successfully");
+        if (rawCandidatesData && rawCandidatesData.length > 0) {
+          // Convert data format
+          const transformedCandidates = transformBackendCandidates(rawCandidatesData);
+          setCandidates(transformedCandidates);
+          toast.success("Candidates loaded successfully");
+        } else {
+          // If there is no candidate data, try importing sample data
+          try {
+            const importResponse = await fetch('http://localhost:3002/api/candidates/import', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+            });
+
+            if (importResponse.ok) {
+              // Reacquire candidate data
+              const newCandidatesResponse = await fetch('http://localhost:3002/api/candidates');
+              if (newCandidatesResponse.ok) {
+                const newCandidatesResult = await newCandidatesResponse.json();
+                const newRawCandidatesData = newCandidatesResult.data.candidates;
+
+                if (newRawCandidatesData && newRawCandidatesData.length > 0) {
+                  const transformedCandidates = transformBackendCandidates(newRawCandidatesData);
+                  setCandidates(transformedCandidates);
+                  toast.success("Sample candidates loaded successfully");
+                } else {
+                  setCandidates([]);
+                  toast.info("No candidate data available");
+                }
+              }
+            } else {
+              setCandidates([]);
+              toast.info("No candidate data available");
+            }
+          } catch (importError) {
+            setCandidates([]);
+            toast.info("No candidate data available");
+          }
+        }
+      } else {
+        setCandidates([]);
+        toast.error("Failed to connect to backend server");
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to load data';
       setError(errorMessage);
       toast.error(errorMessage);
-      console.error('初始化数据失败:', err);
+      console.error('Initialization of data failed:', err);
+      setCandidates([]);
     } finally {
       setLoading(false);
     }
@@ -67,6 +121,7 @@ export default function App() {
   const handleRefreshData = () => {
     initializeData();
   };
+
 
   // Filter candidates based on search query
   const filteredCandidates = useMemo(() => {
@@ -112,16 +167,6 @@ export default function App() {
     }
   }, [filteredCandidates, isCompareMode, selectedCandidates]);
 
-  // Create a derived selection state for visual display
-  // In normal mode: candidates in comparison table appear selected
-  // In compare mode: only actually selected candidates appear selected
-  const displayedAsSelected = useMemo(() => {
-    if (isCompareMode) {
-      return selectedCandidates;
-    } else {
-      return comparisonTableCandidates.map(candidate => candidate.id);
-    }
-  }, [isCompareMode, selectedCandidates, comparisonTableCandidates]);
 
   const handleToggleDimension = (dimension: string, enabled: boolean) => {
     if (enabled && !activeDimensions.includes(dimension)) {
@@ -135,7 +180,11 @@ export default function App() {
 
   const handleAddDimension = (dimension: string) => {
     if (!activeDimensions.includes(dimension) && !availableDimensions.includes(dimension)) {
+      // Add to the list of available dimensions
+      setAvailableDimensions([...availableDimensions, dimension]);
+      // Add to the active dimension list
       setActiveDimensions([...activeDimensions, dimension]);
+      toast.success(`"${dimension}" added to comparison`);
     }
   };
 
@@ -147,8 +196,13 @@ export default function App() {
     setHighlightedRow(dimension === highlightedRow ? "" : dimension);
   };
 
-  const handleExport = () => {
-    toast.success("Export feature coming soon!");
+  const handleImportJD = () => {
+    setIsJDImportOpen(true);
+  };
+
+  const handleJDImported = () => {
+    // 重新加载候选人数据和JD状态
+    initializeData();
   };
 
   const handleCandidateSelection = (candidateId: string, selected: boolean) => {
@@ -288,9 +342,9 @@ export default function App() {
                   Refresh Data
                 </Button>
 
-                <Button variant="outline" size="sm" onClick={handleExport}>
-                  <Download className="w-4 h-4 mr-2" />
-                  Export
+                <Button variant="outline" size="sm" onClick={handleImportJD}>
+                  <FileText className="w-4 h-4 mr-2" />
+                  Import JD
                 </Button>
               </div>
             </div>
@@ -301,7 +355,7 @@ export default function App() {
         <div className="flex-1 overflow-y-auto">
           <div className="px-6 py-6 space-y-8">
 
-            {/* 加载状态 */}
+            {/* Loading status */}
             {loading && (
               <div className="text-center py-12">
                 <RefreshCw className="w-8 h-8 mx-auto text-muted-foreground mb-4 animate-spin" />
@@ -310,7 +364,7 @@ export default function App() {
               </div>
             )}
 
-            {/* 错误状态 */}
+            {/* Error state */}
             {error && !loading && (
               <div className="text-center py-12">
                 <div className="max-w-md mx-auto">
@@ -375,6 +429,7 @@ export default function App() {
                       activeDimensions={activeDimensions}
                       highlightedRow={highlightedRow}
                       onRowClick={handleRowClick}
+                      hasJD={hasJD}
                     />
                   </div>
                 ) : (
@@ -424,13 +479,14 @@ export default function App() {
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                   {filteredCandidates.map((candidate) => (
-                    <CandidateCard 
-                      key={candidate.id} 
+                    <CandidateCard
+                      key={candidate.id}
                       candidate={candidate}
                       isSelected={selectedCandidates.includes(candidate.id)}
                       onSelectionChange={handleCandidateSelection}
                       selectionDisabled={!selectedCandidates.includes(candidate.id) && selectedCandidates.length >= 5}
                       showSelection={!isCompareMode}
+                      hasJDData={hasJD}
                     />
                   ))}
                 </div>
@@ -439,6 +495,13 @@ export default function App() {
           </div>
         </div>
       </div>
+
+      {/* JD Import Modal */}
+      <JDImportModal
+        isOpen={isJDImportOpen}
+        onClose={() => setIsJDImportOpen(false)}
+        onJDImported={handleJDImported}
+      />
     </div>
   );
 }

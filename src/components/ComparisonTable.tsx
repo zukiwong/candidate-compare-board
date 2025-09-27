@@ -3,82 +3,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { SkillProgressBar } from "./SkillProgressBar";
-import { SkillChips } from "./SkillChips";
 import { ProjectModal } from "./ProjectModal";
 import { WorkExperienceModal } from "./WorkExperienceModal";
-import { 
-  GraduationCap, 
-  MapPin, 
-  Check, 
-  X, 
-  Clock, 
-  Github, 
-  ExternalLink, 
-  Linkedin, 
-  FileText,
-  Star
+import { Candidate } from "../types/candidate";
+import {
+  MapPin,
+  Check,
+  X,
+  Clock,
+  Github,
+  ExternalLink,
+  Linkedin,
+  FileText
 } from "lucide-react";
-
-interface Candidate {
-  id: string;
-  name: string;
-  avatar?: string;
-  coreSkillMatch: number;
-  topSkills: Array<{ name: string; rating: number }>;
-  projects: Array<{
-    title: string;
-    description: string;
-    technologies: string[];
-    duration: string;
-    githubUrl?: string;
-    liveUrl?: string;
-  }>;
-  education: {
-    school: string;
-    schoolLogo?: string;
-    degree: string;
-  };
-  workExperience: {
-    years: number;
-    months: number;
-    positions: Array<{
-      company: string;
-      position: string;
-      duration: string;
-      description: string;
-      technologies: string[];
-      achievements: string[];
-    }>;
-  };
-  location: {
-    current: string;
-    matches: boolean;
-    isRemote: boolean;
-    isHybrid: boolean;
-  };
-  links: {
-    github?: string;
-    portfolio?: string;
-    linkedin?: string;
-    cv?: string;
-    transcript?: string;
-  };
-  softSkills: Array<{ name: string; rating: number }>;
-  followUpPrompts: string[];
-}
 
 interface ComparisonTableProps {
   candidates: Candidate[];
   activeDimensions: string[];
   highlightedRow?: string;
   onRowClick?: (dimension: string) => void;
+  hasJD?: boolean;
 }
 
-export function ComparisonTable({ 
-  candidates, 
-  activeDimensions, 
+export function ComparisonTable({
+  candidates,
+  activeDimensions,
   highlightedRow,
-  onRowClick 
+  onRowClick,
+  hasJD = false
 }: ComparisonTableProps) {
   const [selectedProject, setSelectedProject] = useState<any>(null);
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
@@ -106,7 +58,7 @@ export function ComparisonTable({
   const getHighestValue = (dimension: string, candidates: Candidate[]) => {
     switch (dimension) {
       case "Core Skill Match %":
-        return Math.max(...candidates.map(c => c.coreSkillMatch));
+        return Math.max(...candidates.map(c => c.coreSkillMatch || 0));
       case "Work Experience":
         return Math.max(...candidates.map(c => c.workExperience.years * 12 + c.workExperience.months));
       default:
@@ -114,7 +66,7 @@ export function ComparisonTable({
     }
   };
 
-  const isHighestInDimension = (dimension: string, candidate: Candidate, value: any) => {
+  const isHighestInDimension = (dimension: string, candidate: Candidate) => {
     const highest = getHighestValue(dimension, candidates);
     if (highest === null) return false;
     
@@ -129,14 +81,14 @@ export function ComparisonTable({
   };
 
   const renderDimensionContent = (dimensionName: string, candidate: Candidate) => {
-    const isHighest = isHighestInDimension(dimensionName, candidate, null);
+    const isHighest = isHighestInDimension(dimensionName, candidate);
     const highlightClass = isHighest ? "bg-accent/30" : "";
 
     switch (dimensionName) {
       case "Core Skill Match %":
         return (
           <div className={`px-4 py-3 ${highlightClass}`}>
-            <SkillProgressBar percentage={candidate.coreSkillMatch} />
+            <SkillProgressBar percentage={candidate.coreSkillMatch || 0} />
           </div>
         );
       
@@ -196,8 +148,8 @@ export function ComparisonTable({
                 </AvatarFallback>
               </Avatar>
               <div className="text-xs min-w-0">
-                <div className="truncate font-medium">{candidate.education.school}</div>
-                <div className="text-muted-foreground truncate">{candidate.education.degree}</div>
+                <div className="truncate font-medium">{candidate.education.degree}</div>
+                <div className="text-muted-foreground truncate">{candidate.education.school}</div>
               </div>
             </div>
           </div>
@@ -248,22 +200,60 @@ export function ComparisonTable({
           <div className="px-4 py-3">
             <div className="flex gap-1">
               {candidate.links.github && (
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-accent/50 cursor-pointer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    window.open(candidate.links.github, '_blank');
+                  }}
+                >
                   <Github className="w-3 h-3" />
                 </Button>
               )}
               {candidate.links.portfolio && (
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-accent/50 cursor-pointer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    window.open(candidate.links.portfolio, '_blank');
+                  }}
+                >
                   <ExternalLink className="w-3 h-3" />
                 </Button>
               )}
               {candidate.links.linkedin && (
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-accent/50 cursor-pointer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    window.open(candidate.links.linkedin, '_blank');
+                  }}
+                >
                   <Linkedin className="w-3 h-3" />
                 </Button>
               )}
               {candidate.links.cv && (
-                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-accent/50 cursor-pointer"
+                  onClick={(e: React.MouseEvent) => {
+                    e.stopPropagation();
+                    if (candidate.links.cv) {
+                      // 处理CV文件 - 如果是相对路径，直接使用（Vite会处理public文件夹中的文件）
+                      const cvUrl = candidate.links.cv.startsWith('http')
+                        ? candidate.links.cv
+                        : candidate.links.cv;
+                      window.open(cvUrl, '_blank');
+                    }
+                  }}
+                >
                   <FileText className="w-3 h-3" />
                 </Button>
               )}
@@ -281,9 +271,9 @@ export function ComparisonTable({
                     <span className="truncate">{skill.name}</span>
                     <span>{skill.rating}/5</span>
                   </div>
-                  <div className="w-full bg-muted rounded-full h-1">
+                  <div className="w-full bg-gray-200 rounded-full h-1">
                     <div
-                      className="bg-primary h-1 rounded-full"
+                      className="bg-gray-600 h-1 rounded-full"
                       style={{ width: `${(skill.rating / 5) * 100}%` }}
                     />
                   </div>
@@ -302,7 +292,10 @@ export function ComparisonTable({
     }
   };
 
-  const allDimensions = ["Core Skill Match %", "Top 5 Skills (Self-Ranked)", ...activeDimensions];
+  const allDimensions = [
+    "Top 5 Skills (Self-Ranked)",
+    ...activeDimensions
+  ];
 
   return (
     <>
@@ -325,10 +318,12 @@ export function ComparisonTable({
                   <div className="font-semibold text-sm">{candidate.name}</div>
                 </div>
               </div>
-              <div className="mt-2">
-                <SkillProgressBar percentage={candidate.coreSkillMatch} showPercentage={false} />
-                <div className="text-xs text-center mt-1 font-medium">{candidate.coreSkillMatch}% Match</div>
-              </div>
+              {hasJD && (
+                <div className="mt-2">
+                  <SkillProgressBar percentage={candidate.coreSkillMatch || 0} showPercentage={false} />
+                  <div className="text-xs text-center mt-1 font-medium">{candidate.coreSkillMatch || 0}% Match</div>
+                </div>
+              )}
             </div>
           ))}
         </div>

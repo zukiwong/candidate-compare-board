@@ -2,7 +2,7 @@ import { Badge } from "./ui/badge";
 
 interface Skill {
   name: string;
-  rating: number;
+  rating?: number;
 }
 
 interface SkillChipsProps {

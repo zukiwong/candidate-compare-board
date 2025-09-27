@@ -1,4 +1,4 @@
-// 技能接口
+// Skill Interface
 export interface Skill {
   name: string;
   self_rank?: number;
@@ -7,7 +7,7 @@ export interface Skill {
   rating?: number;
 }
 
-// 项目接口
+// Project Interface
 export interface Project {
   title: string;
   description: string;
@@ -17,14 +17,14 @@ export interface Project {
   liveUrl?: string;
 }
 
-// 教育背景接口
+// Educational background interface
 export interface Education {
   school: string;
   schoolLogo?: string;
   degree: string;
 }
 
-// 工作经验职位接口
+// Work Experience Position Interface
 export interface WorkExperiencePosition {
   company: string;
   position: string;
@@ -34,14 +34,14 @@ export interface WorkExperiencePosition {
   achievements: string[];
 }
 
-// 工作经验接口
+// Work Experience Interface
 export interface WorkExperience {
   years: number;
   months: number;
   positions: WorkExperiencePosition[];
 }
 
-// 地理位置接口
+// Geographical location interface
 export interface Location {
   current: string;
   matches: boolean;
@@ -49,7 +49,7 @@ export interface Location {
   isHybrid: boolean;
 }
 
-// 链接接口
+// Link interface
 export interface Links {
   github?: string;
   portfolio?: string;
@@ -59,13 +59,23 @@ export interface Links {
   visa?: string;
 }
 
-// 软技能接口
+// Soft Skills Interface
 export interface SoftSkill {
   name: string;
   rating: number;
 }
 
-// 候选人接口 - 基于前端现有结构和后端API响应
+// Detailed scoring interface
+export interface DetailedScores {
+  technical_skills_score?: number;
+  experience_score?: number;
+  project_complexity_score?: number;
+  education_score?: number;
+  soft_skills_score?: number;
+  portfolio_quality_score?: number;
+}
+
+// Candidate Interface - Based on the existing frontend structure and backend API responses
 export interface Candidate {
   id: string;
   name: string;
@@ -75,6 +85,7 @@ export interface Candidate {
   experience?: string;
   coreSkillMatch?: number;
   match_pct?: number;
+  detailedScores?: DetailedScores;
   topSkills: Skill[];
   projects: Project[];
   education: Education;
@@ -85,20 +96,20 @@ export interface Candidate {
   followUpPrompts: string[];
 }
 
-// API 响应类型
+// API 
 export interface ApiResponse<T> {
   success: boolean;
   message?: string;
   data: T;
 }
 
-// 候选人列表 API 响应
+// Candidate List API Response
 export interface CandidatesResponse {
   candidates: Candidate[];
   total: number;
 }
 
-// 匹配结果接口
+// Matching results interface
 export interface MatchResult {
   candidateId: string;
   candidateName: string;

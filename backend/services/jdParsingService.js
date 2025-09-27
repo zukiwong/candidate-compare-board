@@ -2,13 +2,13 @@ const geminiService = require('./geminiService');
 const storage = require('../data/storage');
 
 class JDParsingService {
-  // 解析并存储JD
+  // Parse and store JD
   async parseAndStoreJD(jdText) {
     try {
-      // 使用Gemini解析JD文本
+      // Use Gemini to parse JD text
       const parsedJD = await geminiService.parseJD(jdText);
 
-      // 添加元数据
+      // Add metadata
       const jdWithMetadata = {
         ...parsedJD,
         originalText: jdText,
@@ -16,34 +16,34 @@ class JDParsingService {
         id: `jd_${Date.now()}`
       };
 
-      // 存储到内存
+      // Store to memory
       storage.setJD(jdWithMetadata);
 
       return jdWithMetadata;
     } catch (error) {
-      console.error('JD解析和存储失败:', error);
+      console.error('JD parsing and storage failed:', error);
       throw error;
     }
   }
 
-  // 获取当前JD
+  // Get current JD
   getCurrentJD() {
     return storage.getJD();
   }
 
-  // 验证JD数据格式
+  // Validate JD data format
   validateJDStructure(jdData) {
     const requiredFields = ['title', 'skills', 'requirements'];
     const missingFields = requiredFields.filter(field => !jdData[field]);
 
     if (missingFields.length > 0) {
-      throw new Error(`JD数据缺少必需字段: ${missingFields.join(', ')}`);
+      throw new Error(`JD data missing required fields: ${missingFields.join(', ')}`);
     }
 
     return true;
   }
 
-  // 清除当前JD
+  // Clear current JD
   clearJD() {
     storage.setJD(null);
   }
