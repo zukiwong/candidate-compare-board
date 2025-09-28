@@ -33,42 +33,56 @@ This project aims to improve employer identification efficiency, help students p
 - Also helps students recognize gaps with positions and improvement directions
 
 
+## 🚀 Live Demo
+
+- **Frontend**: [https://candidate-compare-board.vercel.app](https://candidate-compare-board.vercel.app)
+- **Backend API**: [https://candidate-compare-board-production.up.railway.app](https://candidate-compare-board-production.up.railway.app)
+
 ## Tech Stack
 
-Frontend: React + Vite
-Backend: Node.js + Express
-AI Integration: Google Gemini API (Flash model)
-Data Storage: Local JSON (for prototype demo)
+**Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
+**Backend**: Node.js + Express + CORS
+**AI Integration**: Google Gemini 2.5 Flash API
+**Deployment**: Vercel (Frontend) + Railway (Backend)
+**Data Storage**: In-memory JSON (for prototype demo)
 
 
 ## Setup Instructions
 
-> The original project is available at https://www.figma.com/design/XIpGhQua9c5Sae8Vkl1Sfq/Candidate-Compare-Board
+> **🌐 Live Demo Available**: You can directly access the deployed application at the links above!
 
-### Running the code
+> **🎨 Original Design**: Available at https://www.figma.com/design/XIpGhQua9c5Sae8Vkl1Sfq/Candidate-Compare-Board
+
+### Local Development Setup
+
 ```bash
 # Install dependencies
 npm i
 cd backend && npm i
 
-# Start backend server (Terminal 1)
-cd backend && npm start
+# Configure backend environment
+cd backend
+cp .env.example .env
+# Add your Gemini API key to .env
 
-# Start frontend server (Terminal 2)
+# Start backend server (Terminal 1)
+npm start
+
+# Start frontend server (Terminal 2 - from root directory)
 npm run dev
 ```
 
-After running locally, you can switch to view both employer and student interfaces.
-The backend is integrated with **Gemini API** and can generate questions and matching results in real-time.
+### Deployment Architecture
 
-### API Key Instructions
-This project provides a **demo API key** by default for short-term evaluation testing (valid for 1 week).
-- If the demo key has expired, please go to [Google AI Studio](https://aistudio.google.com/) to apply for your own free key
-- Configure in the `.env` file:
-  ```
-  GEMINI_API_KEY=your_api_key_here
-  ```
-⚠️ **Note**: For security reasons, the demo key will be disabled after one week.
+- **Frontend**: Deployed on Vercel with automatic deployments from GitHub
+- **Backend**: Deployed on Railway with environment variables configured
+- **API Integration**: Cross-origin requests configured with CORS
+- **Environment Variables**: Securely managed in deployment platforms
+
+### API Key Configuration
+- **Demo**: The live demo includes a configured API key for immediate testing
+- **Local Development**: Get your free API key from [Google AI Studio](https://aistudio.google.com/)
+- **Configuration**: Add `GEMINI_API_KEY=your_key` to `backend/.env`
 
 ## Known Limitations & Future Improvements
 
