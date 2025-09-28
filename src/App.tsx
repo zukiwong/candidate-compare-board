@@ -16,6 +16,8 @@ import { transformBackendCandidates } from "./utils/dataTransform";
 
 import { UserRole } from "./AppRouter";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+
 interface AppProps {
   onRoleChange: (role: UserRole) => void;
 }
@@ -52,7 +54,7 @@ export default function App({ onRoleChange }: AppProps) {
 
       // Check JD status
       try {
-        const jdStatusResponse = await fetch('http://localhost:3002/api/jd/status');
+        const jdStatusResponse = await fetch(`${API_BASE_URL}/jd/status`);
         if (jdStatusResponse.ok) {
           const jdStatusResult = await jdStatusResponse.json();
           setHasJD(jdStatusResult.data.hasJD);
@@ -63,7 +65,7 @@ export default function App({ onRoleChange }: AppProps) {
       }
 
       // Check if there is candidate data
-      const candidatesResponse = await fetch('http://localhost:3002/api/candidates');
+      const candidatesResponse = await fetch(`${API_BASE_URL}/candidates`);
 
       if (candidatesResponse.ok) {
         const candidatesResult = await candidatesResponse.json();
@@ -77,7 +79,7 @@ export default function App({ onRoleChange }: AppProps) {
         } else {
           // If there is no candidate data, try importing sample data
           try {
-            const importResponse = await fetch('http://localhost:3002/api/candidates/import', {
+            const importResponse = await fetch(`${API_BASE_URL}/candidates/import`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -86,7 +88,7 @@ export default function App({ onRoleChange }: AppProps) {
 
             if (importResponse.ok) {
               // Reacquire candidate data
-              const newCandidatesResponse = await fetch('http://localhost:3002/api/candidates');
+              const newCandidatesResponse = await fetch(`${API_BASE_URL}/candidates`);
               if (newCandidatesResponse.ok) {
                 const newCandidatesResult = await newCandidatesResponse.json();
                 const newRawCandidatesData = newCandidatesResult.data.candidates;

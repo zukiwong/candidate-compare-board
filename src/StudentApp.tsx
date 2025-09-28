@@ -11,6 +11,8 @@ import { Toaster } from "./components/ui/sonner";
 import { Job } from "./types/job";
 import { UserRole } from "./AppRouter";
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3002/api';
+
 interface StudentAppProps {
   onRoleChange: (role: UserRole) => void;
 }
@@ -53,8 +55,8 @@ export default function StudentApp({ onRoleChange }: StudentAppProps) {
 
       // Fetch student profile and jobs concurrently
       const [profileResponse, jobsResponse] = await Promise.all([
-        fetch('http://localhost:3002/api/student/profile'),
-        fetch('http://localhost:3002/api/student/jobs')
+        fetch(`${API_BASE_URL}/student/profile`),
+        fetch(`${API_BASE_URL}/student/jobs`)
       ]);
 
       if (profileResponse.ok && jobsResponse.ok) {
