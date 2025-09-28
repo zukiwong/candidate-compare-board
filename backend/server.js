@@ -7,6 +7,7 @@ require('dotenv').config();
 const jdRoutes = require('./routes/jd');
 const candidatesRoutes = require('./routes/candidates');
 const matchingRoutes = require('./routes/matching');
+const studentRoutes = require('./routes/student');
 
 // Import Service (for health check)
 const geminiService = require('./services/geminiService');
@@ -36,6 +37,7 @@ app.use((req, res, next) => {
 app.use('/api/jd', jdRoutes);
 app.use('/api/candidates', candidatesRoutes);
 app.use('/api/match', matchingRoutes);
+app.use('/api/student', studentRoutes);
 
 // Root path
 app.get('/', (req, res) => {

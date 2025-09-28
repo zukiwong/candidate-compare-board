@@ -1,17 +1,24 @@
 import { useState } from "react";
 import { Button } from "./ui/button";
-import { 
-  LayoutDashboard, 
-  Search, 
-  Users, 
-  Building, 
+import {
+  LayoutDashboard,
+  Search,
+  Users,
+  Building,
   Calendar,
-  LogOut
+  LogOut,
+  ArrowLeftRight
 } from "lucide-react";
+import { UserRole } from "../AppRouter";
 const logo = "/assets/e2d8b480c5a427d4be92cf3c3dde8a8779106e90.png";
 const avatar = "/assets/avatar.png";
 
-export function MainSidebar() {
+interface MainSidebarProps {
+  onRoleChange: (role: UserRole) => void;
+  isStudentView?: boolean;
+}
+
+export function MainSidebar({ onRoleChange, isStudentView = false }: MainSidebarProps) {
   const [activeTab, setActiveTab] = useState("candidates");
 
   const navigationItems = [
@@ -55,16 +62,29 @@ export function MainSidebar() {
             alt="User Avatar"
             className="w-8 h-8 rounded-full object-cover"
           />
-          <span className="text-sm font-medium text-gray-900">ONE New Zealand</span>
+          <span className="text-sm font-medium text-gray-900">
+            {isStudentView ? "Zuki Wong" : "ONE New Zealand"}
+          </span>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-full justify-start text-gray-600 hover:text-gray-900 p-0 h-auto"
-        >
-          <LogOut className="w-4 h-4 mr-2" />
-          Log out
-        </Button>
+        <div className="space-y-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-gray-600 hover:text-gray-900 p-0 h-auto"
+            onClick={() => onRoleChange(isStudentView ? "employer" : "student")}
+          >
+            <ArrowLeftRight className="w-4 h-4 mr-2" />
+            {isStudentView ? "Switch to Employer View" : "Switch to Student View"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-gray-600 hover:text-gray-900 p-0 h-auto"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Log out
+          </Button>
+        </div>
       </div>
     </div>
   );

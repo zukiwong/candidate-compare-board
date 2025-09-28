@@ -14,7 +14,13 @@ import { Toaster } from "./components/ui/sonner";
 import { Candidate } from "./types/candidate";
 import { transformBackendCandidates } from "./utils/dataTransform";
 
-export default function App() {
+import { UserRole } from "./AppRouter";
+
+interface AppProps {
+  onRoleChange: (role: UserRole) => void;
+}
+
+export default function App({ onRoleChange }: AppProps) {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -247,7 +253,7 @@ export default function App() {
       
       {/* Main Navigation Sidebar */}
       <div className="flex-shrink-0">
-        <MainSidebar />
+        <MainSidebar onRoleChange={onRoleChange} />
       </div>
       
       {/* Secondary Sidebar - Dimension Management */}
