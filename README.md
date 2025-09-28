@@ -2,29 +2,22 @@
 
 ## Project Overview
 
-This project aims to provide the **Summer of Tech platform** with a more efficient, fair, and lightweight matching tool that comprehensively enhances the matching experience across three key stages: **"Identification"**, **"Communication"**, and **"Preparation"**.
+This project aims to provide the Summer of Tech platform with a more efficient, fair, and lightweight AI-powered matching tool that enhances the overall experience across three key stages:
+ Identification, Communication, and Preparation.
+Unlike traditional ATS screening systems, this project is positioned as an AI-assisted Matchmaking Platform — helping both employers and students quickly find their best fit during short in-person meetings.
 
-This is not a traditional recruitment or ATS screening system, but rather a **"Matchmaking Platform"**.
-
-In the current Summer of Tech process, the main pain points include: large numbers of students, similar resumes, low matching efficiency, and limited communication time. Therefore, we hope to help employers quickly understand candidates within limited time through **AI-assisted rapid identification and intelligent questioning mechanisms**, while helping students better showcase their fit for positions, thereby improving matching quality and meeting effectiveness.
 
 ## Pain Points & Insights
 
-**Employer Perspective:**
-- May need to face hundreds of candidates in each event, with low efficiency in manual screening and communication
-- Difficult to grasp core highlights with just 10 seconds of resume browsing, and similar student backgrounds make it hard to form differentiated impressions
+In the current Summer of Tech recruitment process, both students and employers face low matching efficiency:
 
-**Student Perspective:**
-- Students typically can only upload one generic resume, making it difficult to showcase the most relevant skills and experience for different positions
-- Limited communication time with employers during offline events (typically 5-10 minutes), making it hard to accurately express their strengths
+- **Employers** need to browse large volumes of resumes in short timeframes, making it difficult to quickly identify key capabilities
+- **Students** can only upload one generic resume, making it hard to highlight the most relevant experience for different positions
+- **Limited communication time** during in-person events, with both parties lacking structured guidance for expression and questioning
 
-**Platform/Organizer Perspective:**
-- Hope to improve overall matching success rate and communication quality
-- Hope to leverage AI as an auxiliary tool to enhance matchmaking success rate
+This project aims to improve employer identification efficiency, help students precisely showcase their strengths, and optimize the overall event experience through AI-driven matching and preparation tools.
 
 ## Solution Summary
-
-This project is designed from two perspectives: **Employer** and **Student**:
 
 ###  Employer Dashboard
 - Automatically identifies candidate skills and matches them with job descriptions (JD)
@@ -39,39 +32,14 @@ This project is designed from two perspectives: **Employer** and **Student**:
 - **Elevator Pitch generation** allows students to quickly sell themselves and showcase highlights when facing different employers
 - Also helps students recognize gaps with positions and improvement directions
 
-## Core Logic (How It Works)
 
-- Utilizes AI to analyze student resumes (or profile forms) and job description content, identifying keywords and skill associations
-- Calculates matching degree and outputs brief highlight summaries and skill gaps
-- Based on gaps, generates 3 questions employers can ask to assist conversations
-- Student side generates corresponding "self-presentation Q&A suggestions" based on the same logic
-- Through structured skill sorting and horizontal comparison, helps employers quickly identify the most suitable candidates
+## Tech Stack
 
-Unlike traditional ATS systems, this platform does not pursue "fully automated screening" but emphasizes **"AI as assistance"**, enabling people to identify, think, and communicate faster, thereby promoting higher quality matching.
+Frontend: React + Vite
+Backend: Node.js + Express
+AI Integration: Google Gemini API (Flash model)
+Data Storage: Local JSON (for prototype demo)
 
-## Prototype Features
-
-- **Candidate Skill Matching Comparison Board** (Match Comparison Board)
-- **AI Question Generation Module** (For Employers & Students)
-- **Visual Comparison Functionality**
-- **Customizable Structured Skill Fields and Sorting**
-- **Student Access to AI Suggested Questions and Self-Presentation Tips**
-
-**Demo is now complete** and can be run locally (integrated with Gemini API), supporting real data interaction.
-
-## Business Value
-
-**For Employers**: Save screening time, improve identification efficiency, enhance communication quality
-
-**For Students**: Clarify gaps, prepare in advance, enhance presentation skills and confidence
-
-**For Organizers**: Enhance platform intelligence, improve event experience, promote high-quality matching results
-
-## Known Limitations & Future Improvements
-
-- Current resume data is based on local JSON files; future integration with databases and real-time CV parsing is planned
-- Matching algorithm currently based on keywords and semantic analysis; future introduction of deep semantic matching models is planned
-- Student-side questioning suggestions are not yet fully personalized; can be further optimized by combining historical application records
 
 ## Setup Instructions
 
@@ -101,6 +69,12 @@ This project provides a **demo API key** by default for short-term evaluation te
   GEMINI_API_KEY=your_api_key_here
   ```
 ⚠️ **Note**: For security reasons, the demo key will be disabled after one week.
+
+## Known Limitations & Future Improvements
+
+- Current resume data is based on local JSON files; future integration with databases and real-time CV parsing is planned
+- Matching algorithm currently based on keywords and semantic analysis; future introduction of deep semantic matching models is planned
+- Student-side questioning suggestions are not yet fully personalized; can be further optimized by combining historical application records
 
 ## Reflection
 
