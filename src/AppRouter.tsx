@@ -5,7 +5,7 @@ import StudentApp from "./StudentApp";
 export type UserRole = "employer" | "student";
 
 export default function AppRouter() {
-  const [currentRole, setCurrentRole] = useState<UserRole>("employer");
+  const [currentRole, setCurrentRole] = useState<UserRole>("student");
 
   const handleRoleChange = (role: UserRole) => {
     setCurrentRole(role);

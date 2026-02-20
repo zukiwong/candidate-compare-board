@@ -134,6 +134,7 @@ export function JobCard({
           {job.gapAnalysis ? (
             <div
               className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              style={{ cursor: 'pointer' }}
               onClick={() => setGapAnalysisOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -158,6 +159,7 @@ export function JobCard({
           {job.aiQuestions && job.aiQuestions.length > 0 ? (
             <div
               className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              style={{ cursor: 'pointer' }}
               onClick={() => setQuestionsOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
@@ -182,6 +184,7 @@ export function JobCard({
           {job.elevatorPitch ? (
             <div
               className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              style={{ cursor: 'pointer' }}
               onClick={() => setPitchOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
