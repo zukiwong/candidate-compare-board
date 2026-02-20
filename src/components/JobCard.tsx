@@ -10,7 +10,8 @@ import {
   Calendar,
   Target,
   TrendingUp,
-  MessageSquare
+  MessageSquare,
+  ChevronRight
 } from "lucide-react";
 import { Job } from "../types/job";
 import { GapAnalysisModal } from "./GapAnalysisModal";
@@ -133,13 +134,14 @@ export function JobCard({
           {/* Gap Analysis Preview */}
           {job.gapAnalysis ? (
             <div
-              className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              className="group bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
               style={{ cursor: 'pointer' }}
               onClick={() => setGapAnalysisOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className="w-4 h-4 text-orange-600" />
-                <span className="text-sm font-medium">Gap Analysis Ready</span>
+                <span className="text-sm font-medium group-hover:text-primary transition-colors">Gap Analysis Ready</span>
+                <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <p className="text-xs text-muted-foreground">
                 {job.gapAnalysis.strengths.length} strengths, {job.gapAnalysis.gaps.length} areas to improve
@@ -158,13 +160,14 @@ export function JobCard({
           {/* Interview Questions Preview */}
           {job.aiQuestions && job.aiQuestions.length > 0 ? (
             <div
-              className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              className="group bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
               style={{ cursor: 'pointer' }}
               onClick={() => setQuestionsOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
                 <MessageSquare className="w-4 h-4 text-blue-600" />
-                <span className="text-sm font-medium">Interview Questions Ready</span>
+                <span className="text-sm font-medium group-hover:text-primary transition-colors">Interview Questions Ready</span>
+                <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <p className="text-xs text-muted-foreground">
                 {job.aiQuestions.length} tailored questions prepared
@@ -183,13 +186,14 @@ export function JobCard({
           {/* Elevator Pitch Preview */}
           {job.elevatorPitch ? (
             <div
-              className="bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
+              className="group bg-accent/50 p-3 rounded-md cursor-pointer hover:bg-accent/70 transition-colors"
               style={{ cursor: 'pointer' }}
               onClick={() => setPitchOpen(true)}
             >
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-4 h-4 text-purple-600" />
-                <span className="text-sm font-medium">Elevator Pitch Ready</span>
+                <span className="text-sm font-medium group-hover:text-primary transition-colors">Elevator Pitch Ready</span>
+                <ChevronRight className="w-4 h-4 ml-auto text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
               <p className="text-xs text-muted-foreground">
                 {job.elevatorPitch.keyPoints.length} key points for {job.elevatorPitch.timeframe}
