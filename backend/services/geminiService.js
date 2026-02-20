@@ -3,7 +3,7 @@ const OpenAI = require('openai');
 class GeminiService {
   constructor() {
     this.client = new OpenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: process.env.DEEPSEEK_API_KEY || process.env.GEMINI_API_KEY,
       baseURL: 'https://api.deepseek.com',
     });
   }
