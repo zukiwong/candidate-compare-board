@@ -1,19 +1,23 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 
 class GeminiService {
   constructor() {
-    this.genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    this.model = this.genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    this.client = new OpenAI({
+      apiKey: process.env.GEMINI_API_KEY,
+      baseURL: 'https://api.deepseek.com',
+    });
   }
 
   // Universal AI text generation method
   async generateContent(prompt) {
     try {
-      const result = await this.model.generateContent(prompt);
-      const response = await result.response;
-      return response.text();
+      const result = await this.client.chat.completions.create({
+        model: 'deepseek-chat',
+        messages: [{ role: 'user', content: prompt }],
+      });
+      return result.choices[0].message.content;
     } catch (error) {
-      console.error('Gemini API call failed:', error);
+      console.error('DeepSeek API call failed:', error);
       throw new Error('AI service temporarily unavailable');
     }
   }
