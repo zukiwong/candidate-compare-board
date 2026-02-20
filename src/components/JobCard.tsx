@@ -206,7 +206,7 @@ export function JobCard({
 
       {/* Action Button */}
       <div className="pt-4 border-t border-border">
-        <Button variant="outline" size="sm" className="w-full">
+        <Button variant="outline" size="sm" className="w-full" onClick={() => setGapAnalysisOpen(true)}>
           View Detailed Insights
         </Button>
       </div>
