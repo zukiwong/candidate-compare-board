@@ -21,44 +21,28 @@ class GeminiService {
   // Parse JD text into structured data
   async parseJD(jdText) {
     const prompt = `
-Parse the following job description text into structured JSON format. Requirements:
-1. Extract key information fields with high accuracy
-2. Return pure JSON format only, no additional text
-3. Use null values for unclear information
+You are an expert at reading job postings. Extract the key information from the job description below and return it as JSON.
 
-IMPORTANT PARSING GUIDELINES:
-- Company Name: Look for company names after keywords like "at", "with", "for", "@", or in headers. Company names can include words like "New", "Ltd", "Inc", "Corporation", etc.
-- Job Title: Often appears at the beginning or in headers, may be followed by "at [company]"
-- Location: Look for city/country names, "remote", "hybrid", or address information
-- Responsibilities: Extract bullet points or numbered lists describing what the role involves
-- Soft Skills: Look for interpersonal skills like "communication", "teamwork", "leadership", "problem-solving", "creativity"
+The text may be copied from a job board and may include navigation text, "View all jobs", "How you match", category labels, etc. Ignore those and focus only on the actual job content.
 
-Output structure:
+Return ONLY a JSON object with no extra text:
 {
-  "title": "job title",
-  "company": "company name",
+  "title": "the job title/position name",
+  "company": "the hiring company name",
   "location": "work location",
-  "workType": "work type (full-time/part-time/contract/intern)",
-  "responsibilities": ["what you will do", "key responsibility 2", "responsibility 3"],
-  "skills": ["technical skill 1", "technical skill 2", "skill 3"],
-  "softSkills": ["communication", "teamwork", "problem-solving"],
-  "requirements": ["requirement 1", "requirement 2", "requirement 3"],
-  "salary": {
-    "min": minimum_salary,
-    "max": maximum_salary,
-    "currency": "currency"
-  },
-  "benefits": ["benefit1", "benefit2"],
-  "description": "job description summary"
+  "workType": "full-time, part-time, contract, or intern",
+  "responsibilities": ["key responsibility 1", "key responsibility 2"],
+  "skills": ["required technical skill 1", "required technical skill 2"],
+  "softSkills": ["soft skill 1", "soft skill 2"],
+  "requirements": ["requirement 1", "requirement 2"],
+  "salary": { "min": null, "max": null, "currency": null },
+  "benefits": ["benefit 1", "benefit 2"],
+  "description": "one sentence summary of the role"
 }
 
-Examples of company name extraction:
-- "Software Engineer at Google" → company: "Google"
-- "Frontend Developer @ Meta" → company: "Meta"
-- "Data Analyst with One New Zealand" → company: "One New Zealand"
-- "Backend Developer for Microsoft Corporation" → company: "Microsoft Corporation"
+Use null for any field you cannot find. Do not invent information.
 
-Job Description Text:
+Job Description:
 ${jdText}
 `;
 
@@ -68,11 +52,16 @@ ${jdText}
       // Clean up response and attempt JSON parsing
       let cleanResponse = response.trim();
 
-      // Remove markdown code blocks if present
-      if (cleanResponse.startsWith('```json')) {
-        cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
-      } else if (cleanResponse.startsWith('```')) {
-        cleanResponse = cleanResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
+      // Extract JSON from markdown code blocks if present
+      const jsonBlockMatch = cleanResponse.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (jsonBlockMatch) {
+        cleanResponse = jsonBlockMatch[1];
+      } else {
+        // Try to extract raw JSON object if no code block
+        const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanResponse = jsonMatch[0];
+        }
       }
 
       const parsed = JSON.parse(cleanResponse);
@@ -141,15 +130,16 @@ Return JSON format:
       // Clean up response and attempt JSON parsing
       let cleanResponse = response.trim();
 
-      // Remove markdown code blocks if present
-      if (cleanResponse.startsWith('```json')) {
-        cleanResponse = cleanResponse.replace(/```json\n?/, '').replace(/\n?```$/, '');
-      } else if (cleanResponse.startsWith('```')) {
-        cleanResponse = cleanResponse.replace(/```\n?/, '').replace(/\n?```$/, '');
+      // Extract JSON from markdown code blocks if present
+      const jsonBlockMatch = cleanResponse.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      if (jsonBlockMatch) {
+        cleanResponse = jsonBlockMatch[1];
+      } else {
+        const jsonMatch = cleanResponse.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          cleanResponse = jsonMatch[0];
+        }
       }
-
-      // Remove any additional formatting
-      cleanResponse = cleanResponse.replace(/^[`\s]*/, '').replace(/[`\s]*$/, '');
 
       return JSON.parse(cleanResponse);
     } catch (error) {
