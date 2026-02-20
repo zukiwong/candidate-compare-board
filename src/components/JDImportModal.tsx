@@ -240,9 +240,9 @@ export function JDImportModal({ isOpen, onClose, onJDImported }: JDImportModalPr
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-6">
+      <div className="space-y-6 min-w-0 overflow-hidden">
         {parsedJD && (
-          <div className="space-y-4">
+          <div className="space-y-4 min-w-0">
             <div>
               <h4 className="font-semibold mb-2">Position Details</h4>
               <div className="grid grid-cols-2 gap-4 text-sm">
@@ -266,9 +266,9 @@ export function JDImportModal({ isOpen, onClose, onJDImported }: JDImportModalPr
                 <h4 className="font-semibold mb-2">Key Responsibilities</h4>
                 <div className="space-y-2">
                   {parsedJD.responsibilities.slice(0, 4).map((responsibility: string, index: number) => (
-                    <div key={index} className="flex items-start gap-2 text-sm">
+                    <div key={index} className="flex items-start gap-2 text-sm min-w-0">
                       <div className="w-1.5 h-1.5 bg-primary rounded-full mt-2 flex-shrink-0"></div>
-                      <p className="text-muted-foreground">{responsibility}</p>
+                      <p className="text-muted-foreground break-words min-w-0 flex-1">{responsibility}</p>
                     </div>
                   ))}
                   {parsedJD.responsibilities.length > 4 && (
@@ -281,9 +281,9 @@ export function JDImportModal({ isOpen, onClose, onJDImported }: JDImportModalPr
             )}
 
             {parsedJD.skills && parsedJD.skills.length > 0 && (
-              <div>
+              <div className="min-w-0">
                 <h4 className="font-semibold mb-2">Required Skills</h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 min-w-0">
                   {parsedJD.skills.slice(0, 10).map((skill: string, index: number) => (
                     <Badge key={index} variant="secondary" className="text-xs">
                       {skill}
@@ -299,9 +299,9 @@ export function JDImportModal({ isOpen, onClose, onJDImported }: JDImportModalPr
             )}
 
             {parsedJD.softSkills && parsedJD.softSkills.length > 0 && (
-              <div>
+              <div className="min-w-0">
                 <h4 className="font-semibold mb-2">Soft Skills</h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 min-w-0">
                   {parsedJD.softSkills.slice(0, 8).map((skill: string, index: number) => (
                     <Badge key={index} variant="outline" className="text-xs">
                       {skill}
@@ -378,7 +378,7 @@ export function JDImportModal({ isOpen, onClose, onJDImported }: JDImportModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto overflow-x-hidden w-full">
         {step === "input" && renderInputStep()}
         {step === "parsing" && renderParsingStep()}
         {step === "result" && renderResultStep()}
